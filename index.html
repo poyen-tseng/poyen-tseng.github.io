@@ -12,9 +12,12 @@
 
 <body>
 
-    <h1>挖喜柏諺</h1>
-    <div id="tableData"></div>
-    <canvas id="myChart"></canvas>
+    <!-- <h1>挖喜柏諺</h1> -->
+    <div style="position: sticky;  height:20rem;width:10vw display:block; margin:auto;">
+        <canvas id="myChart"></canvas>
+    </div>
+    <table id="tableData" style="overflow-x: auto; margin-left: auto; margin-right: auto;"></table>
+
 
     <script>
         fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=1148301800&single=true')
@@ -38,7 +41,7 @@
                     if (index > 0) { // 略過表頭
                         var columns = row.querySelectorAll('td');
                         var timeLabel = columns[0].textContent.trim();
-                        
+
                         // 排除 "test_page" 與 "時間" 元素
                         if (timeLabel !== "test_page" && timeLabel !== "時間") {
                             timeLabels.push(timeLabel);
@@ -48,6 +51,12 @@
                         }
                     }
                 });
+
+                // 將陣列順序顛倒
+                timeLabels.reverse();
+                totalAssetsData.reverse();
+                cashBalanceData.reverse();
+                stockValueData.reverse();
 
                 // 繪製疊圖
                 var ctx = document.getElementById('myChart').getContext('2d');
@@ -85,7 +94,21 @@
                                 type: 'category',
                                 labels: timeLabels
                             }
-                        }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '資產變化圖',
+                                font: {
+                                    size: 20,
+                                }
+                            }
+                        },
+                        maintainAspectRatio: false, // 設定為 false，允許手動設定寬高
+                        
                     }
                 });
             })
