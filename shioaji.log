@@ -1,1 +1,0 @@
-[E 2024-02-03 18:26:31,513 c:\Users\tseng\AppData\Local\Programs\Python\Python38\lib\site-packages\shioaji\shioaji.py:231:_setup_solace] RequestException timeout('The read operation timed out')
