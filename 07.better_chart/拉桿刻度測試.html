@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart.js 折線圖</title>
+    <!-- 引入 Chart.js 庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="myLineChart"></canvas>
+        <label for="rangeInput">調整副軸範圍：</label>
+        <input type="range" id="rangeInput" min="0" max="100" value="100" oninput="updateChart()">
+    </div>
+
+    <script>
+        // 初始資料集
+        var data = [20, 50, 30, 10, 80];
+
+        // 初始副軸最大值
+        var maxPercentage = 100;
+
+        // 取得畫布
+        var ctx = document.getElementById('myLineChart').getContext('2d');
+
+        // 初始化折線圖
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1', '2', '3', '4', '5'],
+                datasets: [{
+                    label: '折線圖',
+                    data: data,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left'
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        min: 0,
+                        max: maxPercentage
+                    }
+                }
+            }
+        });
+
+        // 更新副軸範圍的函式
+        function updateChart() {
+            // 取得拉桿的值
+            var rangeValue = document.getElementById('rangeInput').value;
+
+            // 更新副軸最大值
+            myLineChart.options.scales.y1.max = rangeValue;
+
+            // 重新繪製圖表
+            myLineChart.update();
+        }
+    </script>
+</body>
+
+</html>
