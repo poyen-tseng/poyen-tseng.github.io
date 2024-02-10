@@ -1,5 +1,25 @@
-table, tr,td,th,caption{
+table,
+tr,
+td,
+th,
+caption {
     border: 1px solid #eee;
     border-collapse: collapse;
     padding: 0.5rem;
+}
+
+
+
+#rangeInput {
+
+    width: 100%;
+    /* 讓拉桿占據整個寬度 */
+}
+
+.value {
+    position: absolute;
+    top: -25px;
+    /* 調整垂直位置，使數值顯示在拉柄上方 */
+    left: 50%;
+    transform: translateX(-50%);
 }

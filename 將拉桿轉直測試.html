@@ -12,24 +12,22 @@
 </head>
 
 <body>
-    <div style="width: 80%; margin: auto;">
-        <canvas id="myLineChart"></canvas>
-    </div>
-
-
-    <div style="display:flex; position: relative; width: 60%; margin: auto;">
-        <label for="rangeInput">調整副軸：</label>
-        <span id="minLabel">0</span>
-        <div style=" position: relative; width: 100%; margin: auto;" class="slider-container">
-            <input type="range" id="rangeInput" oninput="updateChart()">
-        </div>
-        <div>
-            <span id="currentValue" class="value">22</span>
-            <span id="maxLabel">99</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 80%; margin: auto;">
+        <div style="width: 70%;">
+            <canvas id="myLineChart"></canvas>
         </div>
 
+        <div style="width: 30%; display: flex; flex-direction: column; align-items: flex-end;">
+            <label for="rangeInput">調整副軸：</label>
+            <div style="display: flex; align-items: center;">
+                <span id="minLabel">0</span>
+                <div style="width: 70%; margin: 0 10px;">
+                    <input style="appearance: slider-vertical; " type="range" id="rangeInput" oninput="updateChart()">
+                </div>
+                <span id="maxLabel">99</span>
+            </div>
+        </div>
     </div>
-
 
     <script>
         // 初始資料集
@@ -38,17 +36,13 @@
         maxLabel.textContent = Math.max(...data);
 
         // 初始副軸最大值
-        // var maxPercentage = 100;
-        // <input type="range" id="rangeInput" min="0" max="1000" value="0" oninput="updateChart()">
         rangeInput.value = data[0];
         rangeInput.max = Math.max(...data);
         rangeInput.min = Math.min(...data);
+
         var rangeValue = document.getElementById('rangeInput').value;
-
-
         var maxPercentage = (Math.max(...data) / rangeValue) * 100;
         var minPercentage = (Math.min(...data) / rangeValue) * 100;
-
 
         // 取得畫布
         var ctx = document.getElementById('myLineChart').getContext('2d');
@@ -77,7 +71,7 @@
                         position: 'right',
                         min: minPercentage,
                         max: maxPercentage,
-                        ticks: {  //這裡的ticks是副軸的刻度相關配置，而callback則是一個回調函式，用來自定義刻度標籤的顯示。
+                        ticks: {
                             callback: function (value) {
                                 return value + '%';
                             }
@@ -89,25 +83,14 @@
 
         // 更新副軸範圍的函式
         function updateChart() {
-            // 取得拉桿的值
             var rangeValue = document.getElementById('rangeInput').value;
             var maxPercentage = (Math.max(...data) / rangeValue) * 100;
             var minPercentage = (Math.min(...data) / rangeValue) * 100;
-            // 更新當前拉桿數值
-            currentValue.textContent = rangeInput.value;
-            // 計算並設定拉桿數值顯示的位置
-            var percent = (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min) * 100;
-            currentValue.style.left = percent + "%";
 
-
-            // 更新副軸最大值
             myLineChart.options.scales.y1.max = maxPercentage;
             myLineChart.options.scales.y1.min = minPercentage;
 
-            // 重新繪製圖表
             myLineChart.update();
-            // console.log(maxPercentage, minPercentage, rangeValue);
-
         }
     </script>
 </body>
