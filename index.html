@@ -26,7 +26,7 @@
         點擊折線圖上的圖標可以隱藏/顯示那條線
     </p>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; width: 95%; margin: auto;">
+    <div style="display: flex; justify-content: space-between;  width: 95%; margin: auto;">
         <div style="width: 100%;" style="align-items: center;">
             <canvas id="myChart" height="400"></canvas>
         </div>
@@ -42,7 +42,11 @@
             <span id="minLabel">0</span>
         </div>
     </div>
-    <table id="tableData" style="overflow-x: auto; margin-left: auto; margin-right: auto; font-size: small;"></table>
+    <div style="overflow-x: auto; align-items: center;">
+        <table id="tableData" style=" font-size: xx-small; margin: auto;">
+        </table>
+    </div>
+
 </body>
 <!-- <script src="mychartSetting.js"></script> -->
 <script>
@@ -68,8 +72,12 @@
             // 解析表格數據，提取時間、總資產、證券現金餘額、證券市值、期權現金餘額、期權市值
             var timeLabels = [];
             var totalAssetsData = [];
+
+            var totalStockAssetData = [];
             var stockCashBalanceData = [];
             var stockValueData = [];
+
+            var totalFutureAssetData = [];
             var futureOptionBalanceData = [];
             var futureOptionValueData = [];
 
@@ -83,10 +91,14 @@
                     if (timeLabel !== "時間") {
                         timeLabels.push(timeLabel);
                         totalAssetsData.push(parseFloat(columns[1].textContent.trim()));
-                        stockCashBalanceData.push(parseFloat(columns[2].textContent.trim()));
-                        stockValueData.push(parseFloat(columns[3].textContent.trim()));
-                        futureOptionBalanceData.push(parseFloat(columns[4].textContent.trim()));
-                        futureOptionValueData.push(parseFloat(columns[5].textContent.trim()));
+
+                        totalStockAssetData.push(parseFloat(columns[2].textContent.trim()));
+                        stockCashBalanceData.push(parseFloat(columns[3].textContent.trim()));
+                        stockValueData.push(parseFloat(columns[4].textContent.trim()));
+
+                        totalFutureAssetData.push(parseFloat(columns[5].textContent.trim()));
+                        futureOptionBalanceData.push(parseFloat(columns[6].textContent.trim()));
+                        futureOptionValueData.push(parseFloat(columns[7].textContent.trim()));
                     }
                 }
 
@@ -95,10 +107,14 @@
             // 將陣列順序顛倒
             timeLabels.reverse();
             totalAssetsData.reverse();
+            totalStockAssetData.reverse();
             stockCashBalanceData.reverse();
             stockValueData.reverse();
+
+            totalFutureAssetData.reverse();
             futureOptionBalanceData.reverse();
             futureOptionValueData.reverse();
+
             // 繪製疊圖
             var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -119,6 +135,14 @@
 
                         },
                         {
+                            label: '證券總資產',
+                            data: totalStockAssetData,
+                            borderColor: '#fcd0a1', //FF6699
+                            borderWidth: 1,
+                            fill: false,
+                            hidden: true
+                        },
+                        {
                             label: '證券現金餘額',
                             data: stockCashBalanceData,
                             borderColor: 'rgba(255, 99, 132, 1)', //FF6699
@@ -130,6 +154,14 @@
                             label: '證券市值',
                             data: stockValueData,
                             borderColor: 'rgba(54, 162, 235, 1)', //3399CC
+                            borderWidth: 1,
+                            fill: false,
+                            hidden: true
+                        },
+                        {
+                            label: '期權總資產',
+                            data: totalFutureAssetData,
+                            borderColor: '#b1b695', //FF6699
                             borderWidth: 1,
                             fill: false,
                             hidden: true
