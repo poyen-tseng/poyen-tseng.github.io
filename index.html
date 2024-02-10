@@ -26,14 +26,14 @@
         點擊折線圖上的圖標可以隱藏/顯示那條線
     </p>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin: auto;">
-        <div style="width: 70%;" style="align-items: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 95%; margin: auto;">
+        <div style="width: 100%;" style="align-items: center;">
             <canvas id="myChart" height="400"></canvas>
         </div>
 
         <div style=" width: 20vw; display: flex; flex-direction: column; align-items: center;">
-            <label for="rangeInput">調整<br>副軸</label>
-            <span id="currentLabel">1</span>
+            <label for="rangeInput">調整<br>副軸<br></label>
+            <span style="color: red;" id="currentLabel">1</span>
             <span id="maxLabel">2</span>
             <div style="width: 70%; margin: 0 10px;">
                 <input style="appearance: slider-vertical; height: 300px;" type="range" id="rangeInput"
@@ -42,7 +42,7 @@
             <span id="minLabel">0</span>
         </div>
     </div>
-    <table id="tableData" style="overflow-x: auto; margin-left: auto; margin-right: auto;"></table>
+    <table id="tableData" style="overflow-x: auto; margin-left: auto; margin-right: auto; font-size: small;"></table>
 </body>
 <!-- <script src="mychartSetting.js"></script> -->
 <script>
@@ -52,7 +52,8 @@
         maxPercentage,
         minPercentage,
         flattenedDataArray_max,
-        flattenedDataArray_min; //全域變數
+        flattenedDataArray_min
+        ; //全域變數
 
     fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=1483629649&single=true')
         .then(response => response.text())
@@ -88,6 +89,7 @@
                         futureOptionValueData.push(parseFloat(columns[5].textContent.trim()));
                     }
                 }
+
             });
 
             // 將陣列順序顛倒
@@ -154,7 +156,7 @@
                     scales: {
                         x: {
                             type: 'category',
-                            labels: timeLabels
+                            labels: timeLabels,
                         },
                         y: {
                             type: 'linear',
@@ -167,7 +169,7 @@
                             max: maxPercentage,
                             ticks: {
                                 callback: function (value) {
-                                    return value + '%';
+                                    return (Math.round(value * 100) / 100) + '%';
                                 },
                                 maxTicksLimit: 100
                             },
@@ -196,56 +198,59 @@
                         }
                     },
                     maintainAspectRatio: false, // 設定為 false，允許手動設定寬高
+
+
                 }
             });
 
             // 過濾出 hidden=false 的項目
-            visibleDatasets = myChart.data.datasets.filter(dataset => !dataset.hidden);
+            // visibleDatasets = myChart.data.datasets.filter(dataset => !dataset.hidden);
             // console.log(visibleDatasets);
             // 提取只有 hidden=false 的數字資料
-            var visibleDataArray = visibleDatasets.map(dataset => dataset.data);
+            // var visibleDataArray = visibleDatasets.map(dataset => dataset.data);
             // console.log(visibleDataArray);
 
             // 將嵌套的數字陣列扁平化
-            var flattenedDataArray = visibleDataArray.flat();
-            flattenedDataArray_max = Math.max(...flattenedDataArray.filter(num => !isNaN(num)))
-            flattenedDataArray_min = Math.min(...flattenedDataArray.filter(num => !isNaN(num)))
+            // var flattenedDataArray = visibleDataArray.flat();
+            // flattenedDataArray_max = Math.max(...flattenedDataArray.filter(num => !isNaN(num)))
+            // flattenedDataArray_min = Math.min(...flattenedDataArray.filter(num => !isNaN(num)))
 
             // console.log(flattenedDataArray);
 
-            maxLabel.textContent = flattenedDataArray_max;
-            minLabel.textContent = flattenedDataArray_min;
+            maxLabel.textContent = myChart.scales.y.max;
+            minLabel.textContent = myChart.scales.y.min;
 
-            rangeInput.value = flattenedDataArray[0];
-            rangeInput.max = flattenedDataArray_max;
-            rangeInput.min = flattenedDataArray_min;
+            // rangeInput.value = flattenedDataArray[0];
+            rangeInput.max = myChart.scales.y.max;
+            rangeInput.min = myChart.scales.y.min;
 
             rangeValue = document.getElementById('rangeInput').value;
-            maxPercentage = (flattenedDataArray_max / rangeValue) * 100;
-            minPercentage = (flattenedDataArray_min / rangeValue) * 100;
+            maxPercentage = Math.round((myChart.scales.y.max / rangeValue) * 100 * 1000) / 1000;
+            minPercentage = Math.round((myChart.scales.y.min / rangeValue) * 100 * 1000) / 1000;
 
         })
         .catch(error => console.error('獲取數據錯誤:', error));
 
     function updateChart() {
-        flattenedDataArray = myChart.data.datasets.filter(dataset => !dataset.hidden).map(dataset => dataset.data).flat();
-        document.getElementById('maxLabel').textContent = flattenedDataArray_max;
-        document.getElementById('minLabel').textContent = flattenedDataArray_min;
+        // flattenedDataArray = myChart.data.datasets.filter(dataset => !dataset.hidden).map(dataset => dataset.data).flat();
+
+        document.getElementById('maxLabel').textContent = myChart.scales.y.max;
+        document.getElementById('minLabel').textContent = myChart.scales.y.min;
         document.getElementById('currentLabel').textContent = rangeValue;
 
-        document.getElementById('rangeInput').max = flattenedDataArray_max;
-        document.getElementById('rangeInput').min = flattenedDataArray_min;
+        document.getElementById('rangeInput').max = myChart.scales.y.max;
+        document.getElementById('rangeInput').min = myChart.scales.y.min;
         // document.getElementById('currentLabel').min = flattenedDataArray_min;
         rangeValue = document.getElementById('rangeInput').value;
-        maxPercentage = Math.round((flattenedDataArray_max / rangeValue) * 100 * 10000) / 10000;
-        minPercentage = Math.round((flattenedDataArray_min / rangeValue) * 100 * 10000) / 10000;
-        // console.log(rangeInput);
+        maxPercentage = Math.round((myChart.scales.y.max / rangeValue) * 100 * 1000) / 1000;
+        minPercentage = Math.round((myChart.scales.y.min / rangeValue) * 100 * 1000) / 1000;
 
         myChart.options.scales.y1.max = maxPercentage;
         myChart.options.scales.y1.min = minPercentage;
 
         myChart.update();
     }
+
 
 </script>
 
