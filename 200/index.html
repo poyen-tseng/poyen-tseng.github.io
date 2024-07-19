@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>融合功能網頁</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: white;
+            transition: background-color 1s;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .box {
+            width: 250px;
+            height: 200px;
+            background-color: #8b4513;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s;
+            z-index: 1;
+        }
+
+        .box:hover {
+            transform: scale(1.1);
+        }
+
+        .lid {
+            width: 250px;
+            height: 50px;
+            background-color: #d2691e;
+            position: absolute;
+            top: -50px;
+            left: 0;
+            transition: top 0.5s;
+        }
+
+        .message {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 80%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #000000;
+            transition: top 0.5s;
+            font-family: "微軟正黑體";
+            /* 自動調整寬度 */
+            width: 300px;
+            /* 設置最大寬度 */
+        }
+
+        @keyframes shakeBox {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(-5px, -5px);
+            }
+
+            50% {
+                transform: translate(5px, 5px);
+            }
+
+            75% {
+                transform: translate(-5px, 5px);
+            }
+        }
+
+        .shakeBox {
+            animation: shakeBox 0.5s;
+        }
+
+        @keyframes shakeLid {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-5deg);
+            }
+
+            50% {
+                transform: rotate(5deg);
+            }
+
+            75% {
+                transform: rotate(-5deg);
+            }
+        }
+
+        .shakeLid {
+            animation: shakeLid 0.5s;
+        }
+    </style>
+</head>
+
+<body onclick=" createFirework(event);shootFirework(event)">
+
+    <div class="box" id="box" onclick="event.stopPropagation(); promptForPassword();">
+        <div class="lid"></div>
+        <div class="message">又榛200天快樂!!</div>
+    </div>
+    <audio id="manyFirework">
+        <source src="超多煙火.mp3" type="audio/mp3">
+    </audio>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        let login = 0;
+        let shootCount = 0;
+        let isOpen = false;
+        let isGreen = false;
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let answer = "";
+
+
+        // 使用 ipinfo.io API 獲取使用者的地理位置
+        fetch('https://ipinfo.io/json')
+            .then(response => response.json())
+            .then(data => {
+                answer = data.country;
+            })
+            .catch(error => {
+                console.error('Error fetching the country data:', error);
+            });
+
+
+        function promptForPassword() {
+            if (login == 0) {
+                const password = prompt("輸入所在國家代碼:");
+                if (password === answer) {
+                    toggleBox();
+                    login = 1;
+                } else {
+                    alert("疑似外星人入侵!");
+                    // alert(answer);
+                }
+            }
+            else {
+                toggleBox();
+            }
+
+        }
+
+        function toggleBox() {
+            const lid = document.querySelector('.lid');
+            const message = document.querySelector('.message');
+
+            if (isOpen) {
+                lid.style.top = '-50px';
+                message.style.top = '50%';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 100);
+            } else {
+                lid.style.top = '-300px';
+                message.style.display = 'block';
+                setTimeout(() => {
+                    message.style.top = '-100px';
+                }, 0);
+            }
+            const body = document.body;
+
+            isOpen = !isOpen;
+        }
+
+        function createFirework(event) {
+            const particles = [];
+            const particleCount = 50;
+            const angleIncrement = (Math.PI * 2) / particleCount;
+            const speed = 5;
+            const colors = ['#ff0000', '#ff7f00', '#ff00a6', '#00ff00', '#0000ff', '#4b0082', '#8b00ff'];
+            const randColor = colors[Math.floor(Math.random() * colors.length)];
+
+            const randX = Math.random() * canvas.width;
+            const randY = Math.random() * canvas.height;
+            if (login == 1) {
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: event ? event.clientX : randX,
+                        y: event ? event.clientY : randY,
+                        angle: angleIncrement * i,
+                        speed: speed,
+                        radius: 2,
+                        alpha: 1,
+                        decay: 0.01,
+                        color: randColor
+                    });
+                }
+                // 播放音频
+                var audio = document.getElementById("manyFirework");
+                audio.play();
+            }
+
+            function animate() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach((particle, index) => {
+                    particle.x += Math.cos(particle.angle) * particle.speed;
+                    particle.y += Math.sin(particle.angle) * particle.speed;
+                    particle.alpha -= particle.decay;
+
+                    if (particle.alpha <= 0) {
+                        particles.splice(index, 1);
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${hexToRgb(particle.color)}, ${particle.alpha})`;
+                    ctx.fill();
+                });
+
+                if (particles.length > 0) {
+                    requestAnimationFrame(animate);
+                }
+            }
+
+            animate();
+        }
+        function shootFirework(event) {
+            // 播放音频
+            if (login) {
+                // var shoot_audio = document.getElementById("shootFirework");
+                var shoot_audio = new Audio("一個煙火.mp3");
+                shoot_audio.play();
+                shootCount += 1
+                if (shootCount % 10 == 7) {
+                    var shoot_audio = new Audio("巨大煙火.mp3");
+                    shoot_audio.play();
+                }
+            }
+
+        }
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `${r}, ${g}, ${b}`;
+        }
+
+        function randomFirework() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            createFirework();
+            setTimeout(randomFirework, Math.random() * 1000 + 300);
+        }
+        randomFirework();
+        function shakeBox() {
+            if (login == 0) {
+                const box = document.querySelector('.box');
+                box.classList.add('shakeBox');
+                setTimeout(() => {
+                    box.classList.remove('shakeBox');
+                }, 500); // Shake duration should match the CSS animation duration
+            }
+        }
+        setInterval(shakeBox, 3000); // Shake every 5 seconds
+
+        function shakeLid() {
+            if (login & isOpen) {
+                const lid = document.querySelector('.lid');
+                lid.classList.add('shakeLid');
+                setTimeout(() => {
+                    lid.classList.remove('shakeLid');
+                }, 500); // Shake duration should match the CSS animation duration
+            }
+        }
+        setInterval(shakeLid, Math.random() * 3000 + 1000); // Shake every 5 seconds
+
+
+    </script>
+</body>
+
+</html>
