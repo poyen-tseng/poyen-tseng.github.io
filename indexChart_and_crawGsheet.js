@@ -5,9 +5,42 @@ var myChart,
     minPercentage,
     flattenedDataArray_max,
     flattenedDataArray_min
+
     ; //全域變數
 
-fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=1483629649&single=true')
+let pswd = "";
+let is_login = 0;
+
+let balance_str1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-';
+let balance_str2 = 'rTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=1483629649&single=true';
+// let balance_url = "";
+let stock_position_str1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-';
+let stock_position_str2 = 'rTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=515260145&single=true';
+// let position_url = "";
+let future_position_str1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-';
+let future_position_str2 = 'rTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=1019911153&single=true';
+
+
+let tradeHistory_str1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-';
+let tradeHistory_str2 = 'rTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=124928573&single=true';
+
+
+let tradeHistory_week_str1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-';
+let tradeHistory_week_str2 = 'rTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=2076171331&single=true';
+
+if (is_login == 0) {
+    pswd = prompt("輸入密碼獲取數據:");
+    is_login = 1;
+}
+const balance_url = balance_str1 + pswd + balance_str2;
+const stock_position_url = stock_position_str1 + pswd + stock_position_str2;
+const future_position_url = future_position_str1 + pswd + future_position_str2;
+const tradeHistory_url = tradeHistory_str1 + pswd + tradeHistory_str2;
+const tradeHistory_week_url = tradeHistory_week_str1 + pswd + tradeHistory_week_str2;
+
+
+// if (pswd != "") {
+fetch(balance_url)
     .then(response => response.text())
     .then(html => {
         var parser = new DOMParser();
@@ -18,12 +51,12 @@ fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS
         targetElement.innerHTML = table.outerHTML;
 
         // 解析表格數據，提取時間、總資產、證券現金餘額、證券市值、期權現金餘額、期權市值
-        var timeLabels = [];
         var totalAssetsData = [];
 
         var totalStockAssetData = [];
         var stockCashBalanceData = [];
         var stockValueData = [];
+        var timeLabels = [];
 
         var totalFutureAssetData = [];
         var futureOptionBalanceData = [];
@@ -79,8 +112,8 @@ fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS
                         borderColor: 'rgba(75, 192, 192, 1)', //66CCCC
                         borderWidth: 1,
                         fill: false,
-                        hidden: false
-
+                        hidden: false,
+                        pointRadius: 1 // Remove points
                     },
                     {
                         label: '證券總資產',
@@ -137,6 +170,8 @@ fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS
                     x: {
                         type: 'category',
                         labels: timeLabels,
+                        min: 10, // Start index of the data to display
+                        // max: 150 // End index of the data to display
                     },
                     y: {
                         type: 'linear',
@@ -180,21 +215,6 @@ fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS
                 maintainAspectRatio: false, // 設定為 false，允許手動設定寬高
             }
         });
-
-        // 過濾出 hidden=false 的項目
-        // visibleDatasets = myChart.data.datasets.filter(dataset => !dataset.hidden);
-        // console.log(visibleDatasets);
-        // 提取只有 hidden=false 的數字資料
-        // var visibleDataArray = visibleDatasets.map(dataset => dataset.data);
-        // console.log(visibleDataArray);
-
-        // 將嵌套的數字陣列扁平化
-        // var flattenedDataArray = visibleDataArray.flat();
-        // flattenedDataArray_max = Math.max(...flattenedDataArray.filter(num => !isNaN(num)))
-        // flattenedDataArray_min = Math.min(...flattenedDataArray.filter(num => !isNaN(num)))
-
-        // console.log(flattenedDataArray);
-
         maxLabel.textContent = myChart.scales.y.max;
         minLabel.textContent = myChart.scales.y.min;
 
@@ -208,6 +228,52 @@ fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS
 
     })
     .catch(error => console.error('獲取數據錯誤:', error));
+
+//從gsheet爬取目前持倉
+fetch(stock_position_url)
+    .then(response => response.text())
+    .then(html => {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var table = doc.querySelector('.waffle');
+        table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
+        var targetElement = document.getElementById('positionTable_stock');
+        targetElement.innerHTML = table.outerHTML;
+    });
+
+fetch(future_position_url)
+    .then(response => response.text())
+    .then(html => {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var table = doc.querySelector('.waffle');
+        table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
+        var targetElement = document.getElementById('positionTable_future');
+        targetElement.innerHTML = table.outerHTML;
+    });
+
+
+fetch(tradeHistory_week_url)
+    .then(response => response.text())
+    .then(html => {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var table = doc.querySelector('.waffle');
+        table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
+        var targetElement = document.getElementById('tradeHistory_week');
+        targetElement.innerHTML = table.outerHTML;
+    });
+
+fetch(tradeHistory_url)
+    .then(response => response.text())
+    .then(html => {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var table = doc.querySelector('.waffle');
+        table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
+        var targetElement = document.getElementById('tradeHistory_old');
+        targetElement.innerHTML = table.outerHTML;
+    });
 
 function updateChart() {
     // flattenedDataArray = myChart.data.datasets.filter(dataset => !dataset.hidden).map(dataset => dataset.data).flat();
@@ -225,61 +291,15 @@ function updateChart() {
 
     myChart.options.scales.y1.max = maxPercentage;
     myChart.options.scales.y1.min = minPercentage;
-
+    myChart.update();
+}
+function updateTimeScale() {
+    document.getElementById('timeScaleSlider').max = myChart.options.scales.x.labels.length - 10;
+    document.getElementById('timeScaleSlider').min = 0;
+    const timeRangeValue = document.getElementById('timeScaleSlider').value;
+    myChart.options.scales.x.min = parseInt(timeRangeValue);
+    console.log(timeRangeValue)
+    // myChart.options.scales.x.max = 150;
     myChart.update();
 }
 
-
-//從gsheet爬取目前持倉
-fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS0IEfyMkgl-wrTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=515260145&single=true')
-    .then(response => response.text())
-    .then(html => {
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(html, 'text/html');
-        var table = doc.querySelector('.waffle');
-        table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
-        var targetElement = document.getElementById('positionTable');
-        targetElement.innerHTML = table.outerHTML;
-
-        // // 解析表格數據，提取時間、總資產、證券現金餘額、證券市值、期權現金餘額、期權市值
-        // var stockNum = [];
-        // var direction = [];
-
-        // var quantity = [];
-        // var averagePrice = [];
-        // var latestPrice = [];
-
-        // var yesterdayQuantity = [];
-        // var tradeType = [];
-        // var loan = [];
-        // var collateral = [];
-        // var margin = [];
-        // var interest = [];
-
-        // // 遍歷表格行
-        // table.querySelectorAll('tr').forEach((row, index) => {
-        //     if (index > 0) { // 略過表頭
-        //         var columns = row.querySelectorAll('td');
-        //         // var timeLabel = columns[0].textContent.trim();
-
-        //         // 排除 "test_page" 與 "時間" 元素
-        //         // if (timeLabel !== "時間") {
-        //         // timeLabel.push(parseFloat(columns[0].textContent.trim()));
-        //         stockNum.push(parseFloat(columns[1].textContent.trim()));
-
-        //         direction.push(parseFloat(columns[2].textContent.trim()));
-        //         quantity.push(parseFloat(columns[3].textContent.trim()));
-        //         averagePrice.push(parseFloat(columns[4].textContent.trim()));
-
-        //         latestPrice.push(parseFloat(columns[5].textContent.trim()));
-        //         yesterdayQuantity.push(parseFloat(columns[6].textContent.trim()));
-        //         tradeType.push(parseFloat(columns[7].textContent.trim()));
-        //         loan.push(parseFloat(columns[8].textContent.trim()));
-        //         collateral.push(parseFloat(columns[8].textContent.trim()));
-        //         margin.push(parseFloat(columns[9].textContent.trim()));
-        //         interest.push(parseFloat(columns[10].textContent.trim()));
-        //         // }
-        //     }
-
-    });
-// })

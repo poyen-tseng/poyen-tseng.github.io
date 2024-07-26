@@ -11,14 +11,29 @@
     <link rel="stylesheet" href="chartStyle.css">
     <link rel="stylesheet" href="tabNavigator.css">
 </head>
-<script src="reuse_element.js"></script>
+<script src="reuse_element.js">
+    updateChart();
+</script>
+<style>
+    #slider1 {
+        /* -webkit-appearance: none; */
+        /* Remove default appearance */
+        /* appearance: none; */
+        width: 70%;
+        height: 8px;
+        /* Adjust the height as needed */
+        background: none;
+        /* Remove the default background */
+
+    }
+</style>
 
 <body>
     <h2 style="text-align: center;">績效報表</h2>
     <div id="pageNavigator"></div>
     <hr>
     <p>
-        數值有經過一定公式的增減，不代表真實金額^_^ 
+        數值有經過一定公式的增減，不代表真實金額^_^
         <br>
         點擊折線圖上的圖標可以隱藏/顯示那條線
     </p>
@@ -33,12 +48,17 @@
             <span style="color: red;" id="currentLabel">1</span>
             <span id="maxLabel">2</span>
             <div style="width: 70%; margin: 0 10px;">
-                <input style="appearance: slider-vertical; height: 300px;" type="range" id="rangeInput"
+                <input style="appearance: slider-vertical; height: 300px;" value="14000" type="range" id="rangeInput"
                     oninput="updateChart()">
             </div>
             <span id="minLabel">0</span>
         </div>
     </div>
+    <div style="width: 70%; margin: 0 10px; position: relative; direction: rtl;display: flex;">
+        <input type="range" value="40" id="timeScaleSlider" style="width: 90%;" oninput="updateTimeScale()">
+        <label for="timeScaleSlider">時間<br>尺度</label>
+    </div>
+
     <div class="tab">
         <button class="tablinks active" onclick="openTab(event, 'balance')">淨值</button>
         <button class="tablinks" onclick="openTab(event, 'position')">持倉</button>
@@ -58,7 +78,9 @@
         <h3>持倉</h3>
         <p>這裡是持倉內容。自動更新時間為：<span id="myUpdateTime"></span></p>
         <div style="overflow-x: auto; align-items: center;">
-            <table id="positionTable" style=" font-size: xx-small; margin: auto;">
+            <table id="positionTable_stock" style=" font-size: xx-small; margin: auto;">證券
+            </table>
+            <table id="positionTable_future" style=" font-size: xx-small; margin: auto;">期權
             </table>
         </div>
     </div>
@@ -66,6 +88,12 @@
     <div id="tradeHistory" class="tabcontent">
         <h3>交易紀錄</h3>
         <p>這裡是交易紀錄。</p>
+        <div style="overflow-x: auto; align-items: center;">
+            <table id="tradeHistory_week" style=" font-size: xx-small; margin: auto;">本週
+            </table>
+            <table id="tradeHistory_old" style=" font-size: xx-small; margin: auto;">歷史
+            </table>
+        </div>
     </div>
 </body>
 <!-- <script src="mychartSetting.js"></script> -->

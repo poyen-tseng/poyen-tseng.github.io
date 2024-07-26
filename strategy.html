@@ -7,17 +7,159 @@
     <title>我的報表</title>
 </head>
 <script src="reuse_element.js"></script>
+<link rel="stylesheet" href="tabNavigator.css">
+
+<style>
+    .pictureEven {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .pictureEven img {
+        flex: 1 1 400px;
+        max-width: calc(25% - 2px);
+        /* Adjust the gap between images */
+        margin: 2px;
+        height: auto;
+        /* Maintain aspect ratio */
+        object-fit: contain;
+        /* Ensure the image covers the container without stretching */
+    }
+
+    table {
+        border-collapse: collapse;
+        border: 2px solid rgb(140 140 140);
+        font-family: sans-serif;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    caption {
+        caption-side: top;
+        padding: 10px;
+        font-weight: bold;
+    }
+
+    thead,
+    tfoot {
+        background-color: rgb(228 240 245);
+    }
+
+    th,
+    td {
+        border: 1px solid rgb(160 160 160);
+        padding: 8px 10px;
+    }
+
+    td:last-of-type {
+        text-align: center;
+    }
+</style>
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
 
 <body>
     <h2 style="text-align: center;">策略報表</h2>
     <div id="pageNavigator"></div>
-
     <hr>
-    <h3>OP雙買</h3>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo nihil deleniti recusandae illum alias sed
-        eaque a eveniet animi amet, reiciendis consequatur vero, inventore eos asperiores assumenda id! Corporis, nemo?
-    </p>
-    <img src="img/test.jpg" alt="OP雙買" width="200">
+    <table>
+        <caption>
+            即將運行的證券策略 - 取自finlab
+        </caption>
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">策略名稱</th>
+                <th scope="col">歷史8年平均年化報酬</th>
+                <th scope="col">夏普率</th>
+                <th scope="col">歷史最大虧損</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>原味 - 低波動本益成長比</td>
+                <td>36 %</td>
+                <td>2.1</td>
+                <td>36 %</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>改裝 - 小資族資優生</td>
+                <td>62 %</td>
+                <td>2.48</td>
+                <td>28 %</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>改裝 - 監獄兔</td>
+                <td>169 %</td>
+                <td>2.6</td>
+                <td>40 %</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'balance')">原味 - 低波動本益成長比</button>
+        <button class="tablinks" onclick="openTab(event, 'position')">改裝 - 小資族資優生</button>
+        <button class="tablinks" onclick="openTab(event, 'tradeHistory')">改裝 - 監獄兔</button>
+    </div>
+    <div id="balance" class="tabcontent" style="display: block;">
+        <div style="overflow-x: auto; align-items: center;">
+            <h3>原味 - 低波動本益成長比</h3>
+            <p>本益比成長率加入低波動指標 </p>
+            <div class="pictureEven">
+                <img src="img/低波動-報酬-白.bmp" alt="原味 - 低波動本益成長比的圖片" width="200">
+                <img src="img/低波動-夏普-白.bmp" alt="原味 - 低波動本益成長比的圖片" width="200">
+                <img src="img/低波動-勝率-白.bmp" alt="原味 - 低波動本益成長比的圖片" width="200">
+                <img src="img/低波動-mae.png" alt="原味 - 低波動本益成長比的圖片" width="200">
+            </div>
+        </div>
+    </div>
+
+    <div id="position" class="tabcontent">
+        <div style="overflow-x: auto; align-items: center;">
+            <h3>改裝 - 小資族資優生</h3>
+            <p>基於現金流、ROE、營益率的基本面策略 </p>
+            <div class="pictureEven">
+                <img src="img/改裝小資-報酬-白.bmp" alt="改裝 - 小資族資優生的圖片" width="200">
+                <img src="img/改裝小資-夏普-白.bmp" alt="改裝 - 小資族資優生的圖片" width="200">
+                <img src="img/改裝小資-勝率-白.bmp" alt="改裝 - 小資族資優生的圖片" width="200">
+                <img src="img/改裝小資-mae.png" alt="改裝 - 小資族資優生的圖片" width="200">
+            </div>
+        </div>
+    </div>
+
+    <div id="tradeHistory" class="tabcontent">
+        <div style="overflow-x: auto; align-items: center;">
+            <h3>改裝 - 監獄兔</h3>
+            <p>處置股的某些特性</p>
+            <div class="pictureEven">
+                <img src="img/改裝監獄兔-報酬-白.bmp" alt="改裝 - 監獄兔的圖片" width="200">
+                <img src="img/改裝監獄兔-夏普-白.bmp" alt="改裝 - 監獄兔的圖片" width="200">
+                <img src="img/改裝監獄兔-勝率-白.bmp" alt="改裝 - 監獄兔的圖片" width="200">
+                <img src="img/改裝監獄兔-mae.png" alt="改裝 - 監獄兔的圖片" width="200">
+            </div>
+        </div>
+    </div>
+
 
 
 </body>
