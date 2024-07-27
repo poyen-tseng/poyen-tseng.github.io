@@ -136,7 +136,7 @@ fetch(balance_url)
                     {
                         label: '證券總資產',
                         data: totalStockAssetData,
-                        borderColor: '# a55afa', //FF6699
+                        borderColor: 'rgba(205, 117, 255,1)', //FF6699
                         borderWidth: 1,
                         fill: false,
                         hidden: true,
