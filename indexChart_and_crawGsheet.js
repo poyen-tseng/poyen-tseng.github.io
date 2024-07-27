@@ -266,7 +266,8 @@ fetch(stock_position_url)
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
-            rows[0].classList.add('sticky-header');
+            // rows[0].classList.add('sticky-header');
+            rows[0].classList.add('hidden-row');
         }
         if (rows.length > 1) {
             rows[1].classList.add('sticky-header');
@@ -285,7 +286,8 @@ fetch(future_position_url)
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
-            rows[0].classList.add('sticky-header');
+            // rows[0].classList.add('sticky-header');
+            rows[0].classList.add('hidden-row');
         }
         if (rows.length > 1) {
             rows[1].classList.add('sticky-header');
@@ -305,7 +307,8 @@ fetch(tradeHistory_week_url)
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
-            rows[0].classList.add('sticky-header');
+            // rows[0].classList.add('sticky-header');
+            rows[0].classList.add('hidden-row');
         }
         if (rows.length > 1) {
             rows[1].classList.add('sticky-header');
@@ -324,7 +327,8 @@ fetch(tradeHistory_url)
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
-            rows[0].classList.add('sticky-header');
+            // rows[0].classList.add('sticky-header');
+            rows[0].classList.add('hidden-row');
         }
         if (rows.length > 1) {
             rows[1].classList.add('sticky-header');
