@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Receiver</title>
+</head>
+
+<body>
+    <p id="output"></p>
+
+    <script>
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Retrieve the cookie value
+        const data = getCookie('myData');
+        console.log(data); // Outputs: Hello, World!
+        document.getElementById("output").innerText = "Your password is: " + data;
+
+    </script>
+</body>
+
+</html>
