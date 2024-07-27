@@ -29,7 +29,7 @@ let tradeHistory_week_str1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS
 let tradeHistory_week_str2 = 'rTDQqZM2IrbS57nR0j81zYC9qQGEk-HS9Hn6Uz_ir-xAmK-_xVOkG__a16P72WupFV/pubhtml?gid=2076171331&single=true';
 
 if (is_login == 0) {
-    pswd = prompt("輸入密碼獲取數據:");
+    pswd = getCookie('slothCookie'); //prompt("輸入密碼獲取數據:");
     is_login = 1;
 }
 const balance_url = balance_str1 + pswd + balance_str2;
@@ -38,6 +38,13 @@ const future_position_url = future_position_str1 + pswd + future_position_str2;
 const tradeHistory_url = tradeHistory_str1 + pswd + tradeHistory_str2;
 const tradeHistory_week_url = tradeHistory_week_str1 + pswd + tradeHistory_week_str2;
 
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// document.getElementById("output").innerText = "Your password is: " + getQueryParam("password");
 
 // if (pswd != "") {
 fetch(balance_url)
@@ -46,9 +53,20 @@ fetch(balance_url)
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, 'text/html');
         var table = doc.querySelector('.waffle');
+
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('balanceTable');
         targetElement.innerHTML = table.outerHTML;
+
+        // Add class to the first row 因為要凍結第一列
+        var rows = targetElement.querySelectorAll('table tr');
+        if (rows.length > 0) {
+            // rows[0].classList.add('sticky-header');
+            rows[0].classList.add('hidden-row');
+        }
+        if (rows.length > 1) {
+            rows[1].classList.add('sticky-header');
+        }
 
         // 解析表格數據，提取時間、總資產、證券現金餘額、證券市值、期權現金餘額、期權市值
         var totalAssetsData = [];
@@ -118,10 +136,11 @@ fetch(balance_url)
                     {
                         label: '證券總資產',
                         data: totalStockAssetData,
-                        borderColor: '#fcd0a1', //FF6699
+                        borderColor: '# a55afa', //FF6699
                         borderWidth: 1,
                         fill: false,
-                        hidden: true
+                        hidden: true,
+                        pointRadius: 1 // Remove points
                     },
                     {
                         label: '證券現金餘額',
@@ -129,7 +148,8 @@ fetch(balance_url)
                         borderColor: 'rgba(255, 99, 132, 1)', //FF6699
                         borderWidth: 1,
                         fill: false,
-                        hidden: true
+                        hidden: true,
+                        pointRadius: 1 // Remove points
                     },
                     {
                         label: '證券市值',
@@ -137,7 +157,8 @@ fetch(balance_url)
                         borderColor: 'rgba(54, 162, 235, 1)', //3399CC
                         borderWidth: 1,
                         fill: false,
-                        hidden: true
+                        hidden: true,
+                        pointRadius: 1 // Remove points
                     },
                     {
                         label: '期權總資產',
@@ -145,7 +166,8 @@ fetch(balance_url)
                         borderColor: '#b1b695', //FF6699
                         borderWidth: 1,
                         fill: false,
-                        hidden: true
+                        hidden: true,
+                        pointRadius: 1 // Remove points
                     },
                     {
                         label: '期權現金餘額',
@@ -153,7 +175,8 @@ fetch(balance_url)
                         borderColor: 'rgba(1,22,39, 1)', //011627
                         borderWidth: 1,
                         fill: false,
-                        hidden: true
+                        hidden: true,
+                        pointRadius: 1 // Remove points
                     },
                     {
                         label: '期權市值',
@@ -161,7 +184,8 @@ fetch(balance_url)
                         borderColor: 'rgba(255, 159, 28, 1)', //FF9F1C
                         borderWidth: 1,
                         fill: false,
-                        hidden: true
+                        hidden: true,
+                        pointRadius: 1 // Remove points
                     }
                 ]
             },
@@ -239,6 +263,14 @@ fetch(stock_position_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('positionTable_stock');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first row 因為要凍結第一列
+        var rows = targetElement.querySelectorAll('table tr');
+        if (rows.length > 0) {
+            rows[0].classList.add('sticky-header');
+        }
+        if (rows.length > 1) {
+            rows[1].classList.add('sticky-header');
+        }
     });
 
 fetch(future_position_url)
@@ -250,6 +282,14 @@ fetch(future_position_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('positionTable_future');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first row 因為要凍結第一列
+        var rows = targetElement.querySelectorAll('table tr');
+        if (rows.length > 0) {
+            rows[0].classList.add('sticky-header');
+        }
+        if (rows.length > 1) {
+            rows[1].classList.add('sticky-header');
+        }
     });
 
 
@@ -262,6 +302,14 @@ fetch(tradeHistory_week_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('tradeHistory_week');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first row 因為要凍結第一列
+        var rows = targetElement.querySelectorAll('table tr');
+        if (rows.length > 0) {
+            rows[0].classList.add('sticky-header');
+        }
+        if (rows.length > 1) {
+            rows[1].classList.add('sticky-header');
+        }
     });
 
 fetch(tradeHistory_url)
@@ -273,6 +321,14 @@ fetch(tradeHistory_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('tradeHistory_old');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first row 因為要凍結第一列
+        var rows = targetElement.querySelectorAll('table tr');
+        if (rows.length > 0) {
+            rows[0].classList.add('sticky-header');
+        }
+        if (rows.length > 1) {
+            rows[1].classList.add('sticky-header');
+        }
     });
 
 function updateChart() {

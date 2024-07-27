@@ -7,17 +7,55 @@
     <title>我的報表</title>
 </head>
 <script src="reuse_element.js"></script>
+<style>
+    .center-div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+    }
+
+    .circular-image {
+        /* width: 600px; */
+        /* Adjust the size as needed */
+        /* height: 600px; */
+        /* Ensure the height matches the width for a perfect circle */
+        border-radius: 20%;
+        object-fit: cover;
+        /* Ensures the image covers the entire circle */
+    }
+
+    .pictureEven img {
+        flex: 1 1 400px;
+        max-width: calc(25% - 2px);
+        /* Adjust the gap between images */
+        margin: 20px;
+        height: auto;
+        /* Maintain aspect ratio */
+        object-fit: contain;
+        /* Ensure the image covers the container without stretching */
+    }
+</style>
 
 <body>
     <h2 style="text-align: center;">關於這個網頁</h2>
     <div id="pageNavigator"></div>
+    <div class="center-div;">
 
-    <hr>
-    <p>本頁面由github提供為靜態頁面，從google sheet那裡fetch資料過來呈現。<br>
-        google sheet中的資料由AWS EC2執行交易程式與帳戶資料抓取並上傳，意即將google
-        sheet作為資料庫。<br>
-        在EC2執行的程式由python撰寫，並使用finlab api作為策略架構，shioaji作為下單、取得即時行情與帳戶資料之工具。</p>
-    <p>這個網頁由gpt和我共同以血淚製作TT</p>
+        <hr>
+        <p>本頁面由github提供為靜態頁面，從google sheet那裡fetch資料過來呈現。<br><br>
+            google sheet中的資料由AWS EC2執行交易程式與帳戶資料抓取並上傳，意即將google
+            sheet作為資料庫。<br><br>
+            在EC2執行的程式由python撰寫，並使用finlab api作為策略架構，shioaji作為下單、取得即時行情與帳戶資料之工具。</p>
+        <p>本頁面的製作者: gpt + 又榛 + 我 </p>
+        <div class="pictureEven">
+            <img src="img/copilot.png" alt="copilot" width="400vw" class="circular-image">
+            <img src="img/樹懶沙灘.jpg" alt="樹懶與沙灘" width="400vw" class="circular-image">
+            <img src="img/狐狸草地.jpg" alt="狐狸與草地" width="400vw" class="circular-image">
+        </div>
+
+    </div>
+
 </body>
 
 </html>

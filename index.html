@@ -4,100 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的報表</title>
-    <!-- 引入 Chart.js 庫 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- 引入CSS樣式表 -->
-    <link rel="stylesheet" href="chartStyle.css">
-    <link rel="stylesheet" href="tabNavigator.css">
+    <title>輸入密碼以獲取報表資料</title>
 </head>
-<script src="reuse_element.js">
-    updateChart();
-</script>
 <style>
-    #slider1 {
-        /* -webkit-appearance: none; */
-        /* Remove default appearance */
-        /* appearance: none; */
-        width: 70%;
-        height: 8px;
-        /* Adjust the height as needed */
-        background: none;
-        /* Remove the default background */
+    body,
+    html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
+    .center-div {
+        display: block;
+        flex-direction: column;
+        align-items: center;
     }
 </style>
 
 <body>
-    <h2 style="text-align: center;">績效報表</h2>
-    <div id="pageNavigator"></div>
-    <hr>
-    <p>
-        數值有經過一定公式的增減，不代表真實金額^_^
-        <br>
-        點擊折線圖上的圖標可以隱藏/顯示那條線
-    </p>
-
-    <div style="display: flex; justify-content: space-between;  width: 95%; margin: auto;">
-        <div style="width: 100%;" style="align-items: center;">
-            <canvas id="myChart" height="400"></canvas>
-        </div>
-
-        <div style=" width: 20vw; display: flex; flex-direction: column; align-items: center;">
-            <label for="rangeInput">調整<br>副軸<br></label>
-            <span style="color: red;" id="currentLabel">1</span>
-            <span id="maxLabel">2</span>
-            <div style="width: 70%; margin: 0 10px;">
-                <input style="appearance: slider-vertical; height: 300px;" value="14000" type="range" id="rangeInput"
-                    oninput="updateChart()">
-            </div>
-            <span id="minLabel">0</span>
-        </div>
-    </div>
-    <div style="width: 70%; margin: 0 10px; position: relative; direction: rtl;display: flex;">
-        <input type="range" value="40" id="timeScaleSlider" style="width: 90%;" oninput="updateTimeScale()">
-        <label for="timeScaleSlider">時間<br>尺度</label>
+    <div class="center-div">
+        <input type="password" id="userPassword" placeholder="在此輸入密碼🐾">
+        <button onclick="passData()">確認</button>
     </div>
 
-    <div class="tab">
-        <button class="tablinks active" onclick="openTab(event, 'balance')">淨值</button>
-        <button class="tablinks" onclick="openTab(event, 'position')">持倉</button>
-        <button class="tablinks" onclick="openTab(event, 'tradeHistory')">交易紀錄</button>
-    </div>
-
-    <div id="balance" class="tabcontent" style="display: block;">
-        <h3>淨值</h3>
-        <p>這裡是淨值內容。</p>
-        <div style="overflow-x: auto; align-items: center;">
-            <table id="balanceTable" style=" font-size: xx-small; margin: auto;">
-            </table>
-        </div>
-    </div>
-
-    <div id="position" class="tabcontent">
-        <h3>持倉</h3>
-        <p>這裡是持倉內容。自動更新時間為：<span id="myUpdateTime"></span></p>
-        <div style="overflow-x: auto; align-items: center;">
-            <table id="positionTable_stock" style=" font-size: xx-small; margin: auto;">證券
-            </table>
-            <table id="positionTable_future" style=" font-size: xx-small; margin: auto;">期權
-            </table>
-        </div>
-    </div>
-
-    <div id="tradeHistory" class="tabcontent">
-        <h3>交易紀錄</h3>
-        <p>這裡是交易紀錄。</p>
-        <div style="overflow-x: auto; align-items: center;">
-            <table id="tradeHistory_week" style=" font-size: xx-small; margin: auto;">本週
-            </table>
-            <table id="tradeHistory_old" style=" font-size: xx-small; margin: auto;">歷史
-            </table>
-        </div>
-    </div>
+    <script>
+        function passData() {
+            var password = document.getElementById("userPassword").value;
+            document.cookie = "slothCookie=" + encodeURIComponent(password) + "; path=/";
+            window.location.href = "verify.html";
+        }
+        // Add event listener to the input field
+        document.getElementById("userPassword").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                passData();
+            }
+        });
+    </script>
 </body>
-<!-- <script src="mychartSetting.js"></script> -->
-<script src="indexChart_and_crawGsheet.js"></script>
-<script src="tabNavigator.js"></script>
 
 </html>

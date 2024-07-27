@@ -1,7 +1,7 @@
 function injectNavigationBar(targetId) {
     const navigationBarHtml = `
         <p style="text-align: center;">
-            <a href="index.html">績效報表</a>
+            <a href="report.html">績效報表</a>
             <a href="strategy.html">策略報表</a>
             <a href="aboutMe.html">關於我</a>
             <a href="aboutThisPage.html">關於這個網頁</a>
