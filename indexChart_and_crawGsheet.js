@@ -57,7 +57,14 @@ fetch(balance_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('balanceTable');
         targetElement.innerHTML = table.outerHTML;
-
+        // Add class to the first column cells
+        var rows = targetElement.querySelectorAll('table tr');
+        rows.forEach(row => {
+            var firstCell = row.querySelector('td, th');
+            if (firstCell) {
+                firstCell.classList.add('hidden-row');
+            }
+        });
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
@@ -263,6 +270,14 @@ fetch(stock_position_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('positionTable_stock');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first column cells
+        var rows = targetElement.querySelectorAll('table tr');
+        rows.forEach(row => {
+            var firstCell = row.querySelector('td, th');
+            if (firstCell) {
+                firstCell.classList.add('hidden-row');
+            }
+        });
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
@@ -283,6 +298,14 @@ fetch(future_position_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('positionTable_future');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first column cells
+        var rows = targetElement.querySelectorAll('table tr');
+        rows.forEach(row => {
+            var firstCell = row.querySelector('td, th');
+            if (firstCell) {
+                firstCell.classList.add('hidden-row');
+            }
+        });
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
@@ -304,6 +327,14 @@ fetch(tradeHistory_week_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('tradeHistory_week');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first column cells
+        var rows = targetElement.querySelectorAll('table tr');
+        rows.forEach(row => {
+            var firstCell = row.querySelector('td, th');
+            if (firstCell) {
+                firstCell.classList.add('hidden-row');
+            }
+        });
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
@@ -324,6 +355,14 @@ fetch(tradeHistory_url)
         table.querySelectorAll(".row-header-wrapper").forEach(table => table.remove());
         var targetElement = document.getElementById('tradeHistory_old');
         targetElement.innerHTML = table.outerHTML;
+        // Add class to the first column cells
+        var rows = targetElement.querySelectorAll('table tr');
+        rows.forEach(row => {
+            var firstCell = row.querySelector('td, th');
+            if (firstCell) {
+                firstCell.classList.add('hidden-row');
+            }
+        });
         // Add class to the first row 因為要凍結第一列
         var rows = targetElement.querySelectorAll('table tr');
         if (rows.length > 0) {
