@@ -45,18 +45,18 @@
 
 <body>
     <div class="center-div">
-        <input type="text" id="userPassword" placeholder="在此輸入hugging face token🐾">
+        <input type="text" id="userInput" placeholder="在此輸入hugging face token🐾">
         <button onclick="passData()">確認</button>
     </div>
 
     <script>
         function passData() {
-            var password = document.getElementById("userPassword").value;
-            document.cookie = "slothCookie=" + encodeURIComponent(password) + "; path=/";
+            const password = "XgBtZxcba" + document.getElementById("userInput").value;
+            document.cookie = "slothCK=" + encodeURIComponent(password) + "; path=/";
             window.location.href = "需要token才能用.html";
         }
         // Add event listener to the input field
-        document.getElementById("userPassword").addEventListener("keypress", function (event) {
+        document.getElementById("userInput").addEventListener("keypress", function (event) {
             if (event.key === "Enter") {
                 passData();
             }
