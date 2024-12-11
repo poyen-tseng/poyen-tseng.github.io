@@ -181,7 +181,8 @@
 
                 // Perform sentiment analysis on translated text
                 const response = await query({ "inputs": translatedText });
-                resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}<br><br>FinDeBerta原始資料：<br>${JSON.stringify(response)}`;
+                resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}`;
+                // resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}<br><br>FinDeBerta原始資料：<br>${JSON.stringify(response)}`;
 
                 // Flatten the response
                 const flattenedResponse = response.flat();
