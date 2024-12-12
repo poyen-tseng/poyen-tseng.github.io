@@ -70,7 +70,8 @@
 
 <body>
     <div id="input-container">
-        <input type="text" id="text-input" placeholder="Enter text to analyze sentiment" value="台廠將迎轉單商機。因此相關個股同步走高，亞光上漲逾4%，系微上漲逾3%，致茂、群電上漲逾2%。">
+        <input type="text" id="text-input" placeholder="Enter text to analyze sentiment"
+            value="台廠將迎轉單商機。因此相關個股同步走高，亞光上漲逾4%，系微上漲逾3%，致茂、群電上漲逾2%。">
         <button id="analyze-btn">開始分析文本情緒</button>
         <div id="loading"></div>
         <table id="result-table" style="display: none;">
@@ -99,31 +100,34 @@
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
-        fetch(
-            // "https://api-inference.huggingface.co/models/Helsinki-NLP/opus-mt-mul-en",
-            "https://api-inference.huggingface.co/models/utrobinmv/t5_translate_en_ru_zh_large_1024_v2",
-            {
-                headers: {
-                    Authorization: `Bearer ${HF_TK}`,
-                    "Content-Type": "application/json",
-                },
-                method: "POST",
-                body: JSON.stringify({ "inputs": "this is prerun" }),
-            }
-        )
-        fetch(
-            "https://api-inference.huggingface.co/models/mrm8488/deberta-v3-ft-financial-news-sentiment-analysis",
-            {
-                headers: {
-                    Authorization: `Bearer ${HF_TK}`,
-                    "Content-Type": "application/json",
-                },
-                method: "POST",
-                body: JSON.stringify({ "inputs": "this is prerun" }),
-            }
-        )
 
-
+        if (!sessionStorage.getItem('reloadOnce')) {
+            sessionStorage.setItem('reloadOnce', 'true');
+            location.reload();
+            fetch(
+                // "https://api-inference.huggingface.co/models/Helsinki-NLP/opus-mt-mul-en",
+                "https://api-inference.huggingface.co/models/utrobinmv/t5_translate_en_ru_zh_large_1024_v2",
+                {
+                    headers: {
+                        Authorization: `Bearer ${HF_TK}`,
+                        "Content-Type": "application/json",
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ "inputs": "this is prerun" }),
+                }
+            )
+            fetch(
+                "https://api-inference.huggingface.co/models/mrm8488/deberta-v3-ft-financial-news-sentiment-analysis",
+                {
+                    headers: {
+                        Authorization: `Bearer ${HF_TK}`,
+                        "Content-Type": "application/json",
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ "inputs": "this is prerun" }),
+                }
+            )
+        }
         // Async function to translate text to English
         async function translateToEnglish(text) {
             try {
@@ -181,8 +185,7 @@
 
                 // Perform sentiment analysis on translated text
                 const response = await query({ "inputs": translatedText });
-                resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}`;
-                // resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}<br><br>FinDeBerta原始資料：<br>${JSON.stringify(response)}`;
+                resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}<br><br>FinDeBerta原始資料：<br>${JSON.stringify(response)}`;
 
                 // Flatten the response
                 const flattenedResponse = response.flat();

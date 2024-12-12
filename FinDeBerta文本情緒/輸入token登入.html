@@ -52,8 +52,14 @@
     <script>
         function passData() {
             const password = "XgBtZxcba" + document.getElementById("userInput").value;
-            document.cookie = "slothCK=" + encodeURIComponent(password) + "; path=/";
-            window.location.href = "需要token才能用.html";
+            if (password.length == 29) {
+                document.cookie = "slothCK=" + encodeURIComponent(password) + "; path=/";
+                window.location.href = "需要token才能用.html";
+            }
+            else {
+                window.location.href = "loginFail.html";
+            }
+
         }
         // Add event listener to the input field
         document.getElementById("userInput").addEventListener("keypress", function (event) {
