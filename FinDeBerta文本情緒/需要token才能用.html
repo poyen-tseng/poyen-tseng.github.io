@@ -102,7 +102,6 @@
         }
 
         if (!sessionStorage.getItem('reloadOnce')) {
-            sessionStorage.setItem('reloadOnce', 'true');
             location.reload();
             fetch(
                 // "https://api-inference.huggingface.co/models/Helsinki-NLP/opus-mt-mul-en",
@@ -127,6 +126,7 @@
                     body: JSON.stringify({ "inputs": "this is prerun" }),
                 }
             )
+            sessionStorage.setItem('reloadOnce', 'true');
         }
         // Async function to translate text to English
         async function translateToEnglish(text) {
@@ -185,7 +185,8 @@
 
                 // Perform sentiment analysis on translated text
                 const response = await query({ "inputs": translatedText });
-                resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}<br><br>FinDeBerta原始資料：<br>${JSON.stringify(response)}`;
+                resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}`;
+                // resultDiv.innerHTML = `<br><hr>翻譯成英文：<br>${JSON.stringify(translatedText)}<br><br>FinDeBerta原始資料：<br>${JSON.stringify(response)}`;
 
                 // Flatten the response
                 const flattenedResponse = response.flat();
@@ -225,6 +226,11 @@
                 loadingDiv.textContent = 'FinDeBerta分析失敗，請重新整理、更改你的文本(可能太過簡短)或發呆20秒';
                 console.error('Error:', error);
                 resultTable.style.display = 'none';
+                // delay 2 second
+                setTimeout(function () {
+                    //your code to be executed after n ms
+                    location.reload();
+                }, 2000);
             }
         }
 
