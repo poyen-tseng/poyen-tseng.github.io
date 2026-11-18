@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src data:; form-action 'none'; base-uri 'none'; object-src 'none'">
   <title>證券投資・題庫練習</title>
   <style>
     :root { --ink:#203b39; --muted:#6d7b76; --green:#17665b; --green-soft:#eaf4ee; --line:#dfe6df; --paper:#fff; --bg:#f5f6f0; --wrong:#b34440; --wrong-soft:#fff0ed; --radius:20px; }
@@ -36,6 +38,13 @@
     .import-btn:disabled { opacity:.65; }
     .import-btn svg { width:18px; height:18px; flex-shrink:0; }
     .import-note { font-size:11px; color:var(--muted); text-align:center; margin:10px 0 0; }
+    .password-label { display:block; margin-top:17px; margin-bottom:7px; font-size:12px; font-weight:650; }
+    .password-input { display:block; width:100%; min-width:0; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); padding:11px 12px; font:inherit; font-size:16px; }
+    .password-input:focus-visible { outline:2px solid #75a98d; outline-offset:2px; }
+    .password-toggle { display:flex; gap:7px; align-items:center; margin-top:9px; color:var(--muted); font-size:12px; }
+    .password-toggle input { width:15px; height:15px; accent-color:var(--green); }
+    .locked-note { margin:0; color:var(--green); font-size:13px; }
+    .lock-button { width:100%; margin-top:14px; }
     .file-info { border-top:1px solid var(--line); margin-top:20px; padding-top:17px; }
     .filename { font-size:13px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:0 0 6px; }
     .file-counts { font-size:12px; color:var(--muted); margin:0; line-height:1.9; }
@@ -188,18 +197,24 @@
         <div class="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M5 7.5c4-1 7-.5 11 2 4-2.5 7-3 11-2v18c-4-1-7-.5-11 2-4-2.5-7-3-11-2v-18Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 10v17M9 13l4 1M9 18l4 1M20 14l3-1M20 19l3-1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
         <div><h1>證券投資・題庫練習</h1><p>每一次練習，累積一點把握。</p></div>
       </div>
-      <div class="local-badge"><span class="dot"></span>離線可用 · 資料留在本機</div>
+      <div class="local-badge"><span class="dot"></span>密碼解鎖 · 瀏覽器內解密</div>
     </header>
 
     <div class="layout">
       <aside class="sidebar" aria-label="題庫與練習設定">
         <section class="panel import-card">
           <p class="eyebrow">YOUR QUESTION BANK</p>
-          <h2>從你的題庫開始</h2>
-          <p class="hint">選擇 CSV，隨時開始練習。</p>
-          <button class="import-btn" id="importButton" type="button"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V3m-4 4 4-4 4 4M4 14v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="importButtonText">匯入 CSV 題庫</span></button>
-          <input id="fileInput" type="file" accept=".csv,text/csv" hidden aria-label="選擇 CSV 題庫">
-          <p class="import-note">請選擇 twse_bank.csv</p>
+          <h2>解鎖你的題庫</h2>
+          <form id="unlockForm">
+            <p class="hint">輸入密碼，開始本次練習。</p>
+            <label class="password-label" for="passwordInput">題庫密碼</label>
+            <input class="password-input" id="passwordInput" type="password" autocomplete="current-password" required spellcheck="false" autocapitalize="none" aria-describedby="unlockNote">
+            <label class="password-toggle"><input id="showPassword" type="checkbox">顯示密碼</label>
+            <button class="import-btn" id="unlockButton" type="submit"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2" stroke-linecap="round"/></svg><span id="unlockButtonText">解鎖題庫</span></button>
+            <p class="import-note" id="unlockNote">密碼只用於本次解鎖，不會上傳。</p>
+          </form>
+          <p class="locked-note" id="unlockedNote" hidden>題庫已解鎖，可以開始練習。</p>
+          <button class="secondary-btn lock-button" id="lockButton" type="button" hidden>鎖定題庫</button>
           <div class="file-info" id="fileInfo" hidden>
             <p class="filename" id="fileName"></p>
             <p class="file-counts"><strong id="eligibleCount"></strong> 題可練習<br> <span id="excludedCount"></span> 題未驗證，已略過</p>
@@ -214,19 +229,19 @@
       </aside>
 
       <main class="main" id="mainContent">
-        <p class="notice" id="importMessage" role="status" aria-live="polite" hidden></p>
+        <p class="notice" id="statusMessage" role="status" aria-live="polite" hidden></p>
         <p class="notice warning" id="storageNotice" role="status" hidden></p>
         <div id="practiceArea">
           <section class="panel welcome" id="welcomePanel">
             <div class="welcome-topline"><span class="dot" aria-hidden="true"></span>隨機出題・即時回饋</div>
             <h2>一題一題，<br><span>練到熟悉。</span></h2>
-            <p class="welcome-description">匯入題庫，開始你的練習節奏。點選答案後立即查看正解，答錯的題目也會收進錯題本，留待下一次熟練。</p>
+            <p class="welcome-description">輸入密碼解鎖題庫，開始你的練習節奏。點選答案後立即查看正解，答錯的題目也會收進錯題本，留待下一次熟練。</p>
             <div class="welcome-steps">
-              <div class="step"><span class="step-number">01 / IMPORT</span><strong>選擇題庫</strong><p>匯入你的 CSV 檔案</p></div>
+              <div class="step"><span class="step-number">01 / UNLOCK</span><strong>解鎖題庫</strong><p>輸入密碼即可開始</p></div>
               <div class="step"><span class="step-number">02 / PRACTICE</span><strong>隨機練習</strong><p>每輪出題不重複</p></div>
               <div class="step"><span class="step-number">03 / REVIEW</span><strong>立即看答案</strong><p>回顧錯題，加深印象</p></div>
             </div>
-            <p class="welcome-footer">下次回來，再次匯入相同題庫即可接續進度。</p>
+            <p class="welcome-footer">下次回來，再次解鎖即可接續進度。題庫在此瀏覽器內解密。</p>
           </section>
 
           <section class="stats" id="statsPanel" aria-label="本輪練習統計" hidden>
@@ -255,7 +270,7 @@
         </div>
       </main>
     </div>
-    <footer class="page-footer"><span>SECURITIES PRACTICE / 證券投資題庫</span><span>僅練習已驗證答案的題目 · 不上傳任何資料</span></footer>
+    <footer class="page-footer"><span>SECURITIES PRACTICE / 證券投資題庫</span><span>僅練習已驗證答案的題目 · 密碼與答案不上傳</span></footer>
   </div>
 
   <dialog id="confirmDialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription"><form method="dialog"><h2 id="dialogTitle"></h2><p id="dialogDescription"></p><div class="dialog-actions"><button class="secondary-btn" value="cancel" autofocus>取消</button><button class="primary-btn" id="dialogConfirmButton" value="confirm">確認</button></div></form></dialog>
@@ -270,7 +285,9 @@
       let bank = null;
       let session = null;
       let wrongIds = new Set();
-      let importing = false;
+      let unlocking = false;
+      let unlockEpoch = 0;
+      let downloadController = null;
       let storageAvailable = true;
       let confirmation = null;
 
@@ -344,6 +361,27 @@
         if (!globalThis.crypto?.subtle) throw new Error('此瀏覽器無法辨識題庫內容，請以新版 Chrome 或 Edge 開啟這個 HTML 檔案。');
         const hash = await crypto.subtle.digest('SHA-256', buffer);
         return [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+      }
+
+      // TWSEENC1: magic (8), salt (16), IV (12), ciphertext + GCM tag (16).
+      async function derivePasswordKey(password, salt, usages) {
+        const encoded = new TextEncoder().encode(password);
+        try {
+          const material = await crypto.subtle.importKey('raw', encoded, 'PBKDF2', false, ['deriveKey']);
+          return await crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 600000 }, material, { name: 'AES-GCM', length: 256 }, false, usages);
+        } finally { encoded.fill(0); }
+      }
+
+      async function decryptBank(buffer, password) {
+        if (!globalThis.crypto?.subtle) throw new Error('此瀏覽器不支援安全解密，請使用新版 Safari、Chrome 或 Edge，並以 HTTPS 開啟網頁。');
+        const bytes = new Uint8Array(buffer);
+        const magic = new TextEncoder().encode('TWSEENC1');
+        if (bytes.length <= 52 || magic.some((byte, index) => bytes[index] !== byte)) throw new Error('加密題庫格式或版本不支援，檔案也可能不完整。');
+        const header = bytes.subarray(0, 36);
+        const key = await derivePasswordKey(password, header.subarray(8, 24), ['decrypt']);
+        try {
+          return await crypto.subtle.decrypt({ name: 'AES-GCM', iv: header.subarray(24, 36), additionalData: header, tagLength: 128 }, key, bytes.subarray(36));
+        } catch { throw new Error('密碼錯誤或題庫損壞，請重新輸入密碼。'); }
       }
 
       function shuffle(ids) {
@@ -427,17 +465,21 @@
       }
 
       function message(text, error = false) {
-        $('importMessage').textContent = text;
-        $('importMessage').className = 'notice' + (error ? ' error' : '');
-        $('importMessage').setAttribute('role', error ? 'alert' : 'status');
-        $('importMessage').hidden = !text;
+        $('statusMessage').textContent = text;
+        $('statusMessage').className = 'notice' + (error ? ' error' : '');
+        $('statusMessage').setAttribute('role', error ? 'alert' : 'status');
+        $('statusMessage').hidden = !text;
       }
 
       function setBusy(value) {
-        importing = value;
-        $('importButton').disabled = value;
-        $('importButton').setAttribute('aria-busy', String(value));
-        $('importButtonText').textContent = value ? '正在匯入…' : '匯入 CSV 題庫';
+        unlocking = value;
+        $('unlockButton').disabled = value;
+        $('unlockButton').setAttribute('aria-busy', String(value));
+        $('unlockButtonText').textContent = value ? '正在解鎖…' : '解鎖題庫';
+        $('passwordInput').disabled = value;
+        $('showPassword').disabled = value;
+        $('lockButton').hidden = !value && !bank;
+        $('lockButton').textContent = value ? '取消解鎖' : '鎖定題庫';
         $('practiceArea').inert = value;
         $('allModeButton').disabled = value || !bank;
         $('wrongModeButton').disabled = value || !bank;
@@ -445,29 +487,74 @@
         $('clearButton').disabled = value || !bank;
       }
 
-      async function importFile(file) {
-        if (!file || importing) return;
+      async function unlockBank() {
+        if (unlocking || bank) return;
+        let password = $('passwordInput').value;
+        if (!password.length) { message('請輸入題庫密碼。', true); $('passwordInput').focus(); return; }
+        const epoch = ++unlockEpoch;
+        const controller = new AbortController();
+        downloadController = controller;
+        let plaintext = null;
+        $('passwordInput').value = '';
+        $('passwordInput').type = 'password';
+        $('showPassword').checked = false;
         setBusy(true);
-        message('正在讀取題庫，請稍候…');
+        message('正在下載加密題庫，請稍候…');
         try {
-          await new Promise(resolve => setTimeout(resolve, 30));
-          const bytes = await file.arrayBuffer();
+          if (!globalThis.crypto?.subtle) throw new Error('此瀏覽器不支援安全解密，請使用新版 Safari、Chrome 或 Edge，並以 HTTPS 開啟網頁。');
+          let response;
+          try { response = await fetch('./twse_bank.enc', { mode: 'same-origin', credentials: 'omit', cache: 'no-cache', signal: controller.signal }); }
+          catch { throw new Error('無法下載加密題庫，請檢查網路連線，並從正式 HTTPS 網址開啟頁面後重試。'); }
+          if (!response.ok) throw new Error(response.status === 404 ? '線上加密題庫尚未發布，請稍後再試。' : '加密題庫下載失敗，請稍後重試。');
+          let ciphertext;
+          try { ciphertext = await response.arrayBuffer(); }
+          catch { throw new Error('加密題庫下載未完成，請檢查網路後重試。'); }
+          if (epoch !== unlockEpoch) return;
+          message('正在解鎖題庫，請稍候…');
+          plaintext = await decryptBank(ciphertext, password);
+          password = '';
+          if (epoch !== unlockEpoch) return;
           let text;
-          try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
-          catch { throw new Error('檔案不是有效的 UTF-8 CSV，請選擇原始 twse_bank.csv。'); }
+          try { text = new TextDecoder('utf-8', { fatal: true }).decode(plaintext); }
+          catch { throw new Error('解密後的題庫不是有效的 UTF-8 CSV。'); }
           const parsed = readBank(text);
-          const identity = await fingerprint(bytes);
-          // Commit only after the complete file has passed validation.
-          bank = { ...parsed, filename: file.name, storageKey: STORAGE_PREFIX + identity };
+          const identity = await fingerprint(plaintext);
+          if (epoch !== unlockEpoch) return;
+          bank = { ...parsed, filename: '線上加密題庫', storageKey: STORAGE_PREFIX + identity };
           const restored = restore();
           save();
-          message('已匯入 ' + number(bank.ids.length) + ' 題，略過 ' + number(bank.excluded) + ' 題未驗證答案。' + (restored || '開始隨機練習吧！'));
+          message('已解鎖 ' + number(bank.ids.length) + ' 題，略過 ' + number(bank.excluded) + ' 題未驗證答案。' + (restored || '開始隨機練習吧！'));
         } catch (error) {
-          message(error instanceof Error ? error.message : '無法讀取檔案，請重新選擇 CSV。', true);
+          if (epoch === unlockEpoch) message(error instanceof Error ? error.message : '無法解鎖題庫，請重試。', true);
         } finally {
-          setBusy(false);
-          render();
+          password = '';
+          if (plaintext) new Uint8Array(plaintext).fill(0);
+          if (epoch === unlockEpoch) {
+            downloadController = null;
+            setBusy(false);
+            render();
+            if (bank) focusQuestion();
+          }
         }
+      }
+
+      function lockBank(announce = true) {
+        ++unlockEpoch;
+        if (downloadController) downloadController.abort();
+        downloadController = null;
+        if (bank && session) save();
+        bank = null;
+        session = null;
+        wrongIds = new Set();
+        confirmation = null;
+        if ($('confirmDialog').open) $('confirmDialog').close('cancel');
+        $('passwordInput').value = '';
+        $('passwordInput').type = 'password';
+        $('showPassword').checked = false;
+        setBusy(false);
+        render();
+        message(announce ? '題庫已鎖定。練習進度已保留，再次輸入密碼即可接續。' : '');
+        if (announce) $('passwordInput').focus();
       }
 
       function activeRound() { return session.rounds[session.mode]; }
@@ -481,11 +568,27 @@
         $('statsPanel').hidden = !loaded;
         $('quizPanel').hidden = true;
         $('completePanel').hidden = true;
-        $('allModeButton').disabled = !loaded || importing;
-        $('clearButton').disabled = !loaded || importing;
-        $('restartButton').disabled = !loaded || importing;
+        $('unlockForm').hidden = loaded;
+        $('unlockedNote').hidden = !loaded;
+        $('lockButton').hidden = !loaded && !unlocking;
+        $('allModeButton').disabled = !loaded || unlocking;
+        $('clearButton').disabled = !loaded || unlocking;
+        $('restartButton').disabled = !loaded || unlocking;
         if (!loaded) {
           $('wrongModeButton').disabled = true;
+          $('allModeButton').classList.add('active');
+          $('wrongModeButton').classList.remove('active');
+          $('allModeButton').setAttribute('aria-pressed', 'true');
+          $('wrongModeButton').setAttribute('aria-pressed', 'false');
+          $('allCount').textContent = '—';
+          $('wrongCount').textContent = '0';
+          $('options').replaceChildren();
+          for (const id of ['questionText', 'questionMeta', 'feedbackTitle', 'feedbackAnswer', 'completeSummary', 'completeWrongNote', 'fileName', 'eligibleCount', 'excludedCount', 'positionLabel']) $(id).textContent = '';
+          for (const id of ['answeredStat', 'correctStat', 'incorrectStat']) $(id).textContent = '0';
+          $('accuracyStat').textContent = '—';
+          $('feedback').hidden = true;
+          $('nextButton').disabled = true;
+          $('roundProgress').value = 0;
           return;
         }
         const round = activeRound();
@@ -501,8 +604,8 @@
         $('allModeButton').setAttribute('aria-pressed', String(isAll));
         $('wrongModeButton').setAttribute('aria-pressed', String(!isAll));
         const review = session.rounds.mistakes;
-        $('wrongModeButton').disabled = importing || (isAll && !wrongIds.size && (!review || review.cursor === review.queue.length));
-        $('restartButton').disabled = importing || (!isAll && !wrongIds.size);
+        $('wrongModeButton').disabled = unlocking || (isAll && !wrongIds.size && (!review || review.cursor === review.queue.length));
+        $('restartButton').disabled = unlocking || (!isAll && !wrongIds.size);
         $('answeredStat').textContent = number(round.answered);
         $('correctStat').textContent = number(round.correct);
         $('incorrectStat').textContent = number(round.incorrect);
@@ -581,7 +684,7 @@
       }
 
       function answerQuestion(id, choice) {
-        if (importing || !bank) return;
+        if (unlocking || !bank) return;
         const round = activeRound();
         if (round.queue[round.cursor] !== id || owns(round.answers, id)) return;
         round.answers[id] = choice;
@@ -604,7 +707,7 @@
       }
 
       function changeMode(mode) {
-        if (!bank || importing) return;
+        if (!bank || unlocking) return;
         const review = session.rounds.mistakes;
         if (mode === 'mistakes' && (!review || (review.cursor === review.queue.length && wrongIds.size))) {
           if (!wrongIds.size) return;
@@ -627,7 +730,7 @@
       }
 
       function restart() {
-        if (!bank || importing) return;
+        if (!bank || unlocking) return;
         const isAll = session.mode === 'all';
         if (!isAll && !wrongIds.size) return;
         const action = () => {
@@ -640,16 +743,18 @@
         else action();
       }
 
-      $('importButton').addEventListener('click', () => $('fileInput').click());
-      $('fileInput').addEventListener('change', event => {
-        const file = event.target.files[0];
-        event.target.value = '';
-        importFile(file);
+      $('unlockForm').addEventListener('submit', event => {
+        event.preventDefault();
+        unlockBank();
       });
+      $('showPassword').addEventListener('change', () => { $('passwordInput').type = $('showPassword').checked ? 'text' : 'password'; });
+      $('lockButton').addEventListener('click', () => lockBank());
+      window.addEventListener('pagehide', () => lockBank(false));
+      window.addEventListener('pageshow', event => { if (event.persisted) lockBank(false); });
       $('allModeButton').addEventListener('click', () => changeMode('all'));
       $('wrongModeButton').addEventListener('click', () => changeMode('mistakes'));
       $('nextButton').addEventListener('click', () => {
-        if (!bank || importing) return;
+        if (!bank || unlocking) return;
         const round = activeRound();
         const id = round.queue[round.cursor];
         if (!id || !owns(round.answers, id)) return;
@@ -660,7 +765,7 @@
       $('completeRestartButton').addEventListener('click', restart);
       $('completeWrongButton').addEventListener('click', () => changeMode('mistakes'));
       $('clearButton').addEventListener('click', () => {
-        if (!bank || importing) return;
+        if (!bank || unlocking) return;
         confirmAction('清除這份題庫的全部紀錄？', '將清除一般練習、錯題練習的進度與錯題本，並重新開始。這個動作無法復原。', '清除紀錄', true, () => {
           try { localStorage.removeItem(bank.storageKey); } catch { storageWarning(); }
           wrongIds = new Set();
