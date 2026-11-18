@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>證券投資・題庫練習</title>
+  <style>
+    :root { --ink:#203b39; --muted:#6d7b76; --green:#17665b; --green-soft:#eaf4ee; --line:#dfe6df; --paper:#fff; --bg:#f5f6f0; --wrong:#b34440; --wrong-soft:#fff0ed; --radius:20px; }
+    * { box-sizing:border-box; }
+    [hidden] { display:none !important; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Inter,"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif; line-height:1.65; }
+    button,input { font:inherit; }
+    button { cursor:pointer; }
+    button:disabled { cursor:default; }
+    button:focus-visible,a:focus-visible,summary:focus-visible { outline:3px solid #dba848; outline-offset:4px; }
+    button { -webkit-tap-highlight-color:transparent; }
+    .page { max-width:1240px; padding:36px 32px 22px; margin:auto; }
+    .masthead { display:flex; justify-content:space-between; align-items:center; gap:24px; padding-bottom:28px; }
+    .brand { display:flex; align-items:center; gap:15px; }
+    .brand-icon { width:50px; height:50px; border-radius:15px; display:grid; place-items:center; color:white; background:var(--green); flex-shrink:0; }
+    .brand-icon svg { width:28px; height:28px; }
+    h1 { margin:0; font-size:24px; letter-spacing:.04em; font-weight:750; }
+    .brand p { margin:2px 0 0; color:var(--muted); font-size:13px; letter-spacing:.02em; }
+    .local-badge { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; white-space:nowrap; }
+    .dot { width:7px; height:7px; background:#4b9175; border-radius:50%; display:inline-block; flex-shrink:0; }
+    .layout { display:grid; grid-template-columns:270px minmax(0,1fr); align-items:start; gap:28px; }
+    .sidebar { display:flex; flex-direction:column; gap:18px; }
+    .panel { background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); }
+    .import-card { padding:23px; }
+    .eyebrow { margin:0 0 10px; color:var(--muted); font-size:11px; font-weight:750; letter-spacing:.13em; }
+    .import-card h2 { font-size:17px; margin:0 0 5px; }
+    .hint { color:var(--muted); font-size:13px; margin:0; }
+    .import-btn { display:flex; align-items:center; justify-content:center; gap:9px; width:100%; padding:12px 10px; margin-top:20px; border:0; border-radius:11px; background:var(--green); color:#fff; font-weight:700; font-size:14px; transition:background .15s; }
+    .import-btn:hover:not(:disabled) { background:#0d5147; }
+    .import-btn:disabled { opacity:.65; }
+    .import-btn svg { width:18px; height:18px; flex-shrink:0; }
+    .import-note { font-size:11px; color:var(--muted); text-align:center; margin:10px 0 0; }
+    .file-info { border-top:1px solid var(--line); margin-top:20px; padding-top:17px; }
+    .filename { font-size:13px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:0 0 6px; }
+    .file-counts { font-size:12px; color:var(--muted); margin:0; line-height:1.9; }
+    .file-counts strong { color:var(--green); }
+    .mode-nav { padding:8px; }
+    .mode-btn { display:flex; align-items:center; gap:10px; width:100%; text-align:left; border:0; border-radius:12px; background:transparent; color:var(--muted); padding:14px; font-size:14px; font-weight:650; }
+    .mode-btn + .mode-btn { margin-top:4px; }
+    .mode-btn svg { width:19px; height:19px; flex-shrink:0; }
+    .mode-btn.active { color:var(--green); background:var(--green-soft); }
+    .mode-btn:hover:not(:disabled):not(.active) { background:#f5f7f3; }
+    .mode-btn:disabled { opacity:.45; }
+    .count-badge { margin-left:auto; background:#edf0eb; color:#64736c; padding:0 8px; border-radius:20px; min-width:26px; font-size:11px; text-align:center; }
+    .mode-btn.active .count-badge { background:#d7e9dd; color:var(--green); }
+    .sidebar-actions { display:flex; gap:8px; padding:0 5px; }
+    .quiet-btn { border:0; background:transparent; color:var(--muted); padding:6px 5px; font-size:12px; text-decoration:underline; text-underline-offset:4px; }
+    .quiet-btn:hover:not(:disabled) { color:var(--green); }
+    .quiet-btn:disabled { opacity:.4; }
+    .save-note { font-size:11px; color:var(--muted); padding:0 10px; margin:0; display:flex; gap:8px; align-items:baseline; }
+    .save-note .dot { width:5px; height:5px; }
+    .main { min-width:0; }
+    .notice { border-radius:12px; padding:12px 16px; margin:0 0 16px; font-size:13px; background:#e9f2e9; border:1px solid #d5e5d7; color:#34604b; overflow-wrap:anywhere; }
+    .notice.error { background:var(--wrong-soft); border-color:#f0d1ca; color:var(--wrong); }
+    .notice.warning { background:#fff7df; border-color:#eadfbd; color:#7b6529; }
+    .welcome { min-height:510px; padding:50px 46px; overflow:hidden; position:relative; }
+    .welcome-topline { display:flex; gap:7px; align-items:center; font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--green); }
+    .welcome h2 { font-size:clamp(28px,3.2vw,40px); line-height:1.45; letter-spacing:.04em; margin:27px 0 18px; font-weight:750; }
+    .welcome h2 span { color:var(--green); }
+    .welcome-description { max-width:455px; font-size:15px; color:var(--muted); line-height:1.9; margin:0; }
+    .welcome-steps { display:flex; gap:24px; margin-top:42px; padding-top:26px; border-top:1px solid var(--line); }
+    .step { flex:1; }
+    .step-number { display:block; font-size:11px; color:#9aa89e; letter-spacing:.08em; margin-bottom:8px; }
+    .step strong { display:block; font-size:13px; font-weight:700; }
+    .step p { margin:4px 0 0; font-size:12px; color:var(--muted); }
+    .welcome-footer { margin:30px 0 0; font-size:11px; color:#88948d; }
+    .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+    .stat { padding:15px 19px; border-radius:15px; }
+    .stat-label { display:block; color:var(--muted); font-size:11px; margin-bottom:4px; }
+    .stat-value { font-size:25px; line-height:1.25; font-weight:700; letter-spacing:.01em; font-variant-numeric:tabular-nums; }
+    .stat.correct .stat-value { color:var(--green); }
+    .stat.incorrect .stat-value { color:var(--wrong); }
+    .quiz { padding:29px 34px 26px; scroll-margin-top:20px; }
+    .quiz-top { display:flex; justify-content:space-between; align-items:center; gap:14px; font-size:12px; color:var(--muted); margin-bottom:13px; }
+    .mode-label { color:var(--green); font-weight:700; display:flex; align-items:center; gap:7px; }
+    .mode-label::before { content:""; width:5px; height:5px; border-radius:50%; background:var(--green); }
+    progress { display:block; width:100%; height:5px; appearance:none; border:0; border-radius:10px; overflow:hidden; background:#edf0e9; accent-color:var(--green); }
+    progress::-webkit-progress-bar { background:#edf0e9; border-radius:10px; }
+    progress::-webkit-progress-value { background:#438f75; border-radius:10px; transition:width .2s; }
+    progress::-moz-progress-bar { background:#438f75; border-radius:10px; }
+    .question-meta { margin:27px 0 10px; font-size:11px; color:#8a978e; letter-spacing:.04em; }
+    .question { font-size:20px; font-weight:650; line-height:1.8; margin:0 0 23px; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .question:focus,.feedback:focus,.complete-title:focus { outline:none; }
+    .options { display:flex; flex-direction:column; gap:11px; }
+    .option { display:flex; align-items:flex-start; gap:13px; width:100%; border:1px solid var(--line); border-radius:12px; padding:16px 18px; background:#fff; color:var(--ink); text-align:left; font-size:15px; line-height:1.8; transition:background .15s,border-color .15s; }
+    .option:hover:not(:disabled) { background:#f3f8f2; border-color:#80aa95; }
+    .option-num { display:grid; place-items:center; width:26px; height:26px; flex-shrink:0; border:1px solid #dbe1d9; border-radius:8px; font-size:12px; font-weight:700; color:var(--muted); margin-top:1px; }
+    .option-text { flex:1; white-space:pre-wrap; overflow-wrap:anywhere; min-width:0; }
+    .option-marker { align-self:center; font-size:11px; font-weight:700; white-space:nowrap; }
+    .option.is-correct { background:var(--green-soft); border-color:#75a98d; color:#235d45; }
+    .option.is-correct .option-num { background:var(--green); color:#fff; border-color:var(--green); }
+    .option.is-wrong { background:var(--wrong-soft); border-color:#d29a91; color:var(--wrong); }
+    .option.is-wrong .option-num { background:var(--wrong); color:#fff; border-color:var(--wrong); }
+    .option.is-dimmed { color:#7e8982; background:#fbfcf9; }
+    .feedback { margin-top:21px; padding:18px 20px; border-radius:12px; background:var(--green-soft); border-left:3px solid var(--green); }
+    .feedback.wrong { background:var(--wrong-soft); border-left-color:var(--wrong); }
+    .feedback-title { margin:0 0 6px; font-size:14px; font-weight:750; color:var(--green); }
+    .feedback.wrong .feedback-title { color:var(--wrong); }
+    .feedback-answer { margin:0; font-size:14px; line-height:1.85; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .quiz-footer { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-top:25px; padding-top:20px; border-top:1px solid var(--line); }
+    .answer-hint { color:var(--muted); font-size:11px; margin:0; }
+    .primary-btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; border:0; border-radius:10px; background:var(--green); color:#fff; padding:11px 20px; font-size:14px; font-weight:650; white-space:nowrap; }
+    .primary-btn:hover:not(:disabled) { background:#0d5147; }
+    .primary-btn:disabled { background:#e6ebe3; color:#96a091; }
+    .primary-btn svg { width:16px; height:16px; }
+    .secondary-btn { display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); padding:10px 18px; font-size:14px; font-weight:650; }
+    .secondary-btn:hover:not(:disabled) { background:#f5f7f2; }
+    .secondary-btn:disabled { opacity:.45; }
+    .complete { padding:48px 34px; text-align:center; }
+    .complete-icon { width:65px; height:65px; border-radius:50%; background:var(--green-soft); color:var(--green); display:grid; place-items:center; margin:0 auto 20px; }
+    .complete-icon svg { width:30px; height:30px; }
+    .complete h2 { font-size:26px; margin:0 0 10px; }
+    .complete p { font-size:14px; color:var(--muted); margin:0; }
+    .complete-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:27px; }
+    .page-footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; color:#909b91; font-size:11px; padding:28px 3px 0; }
+    dialog { width:min(420px,calc(100% - 36px)); padding:27px; border:1px solid var(--line); border-radius:20px; color:var(--ink); box-shadow:0 20px 80px #17342d26; }
+    dialog::backdrop { background:#17332e60; }
+    dialog h2 { margin:0 0 12px; font-size:19px; }
+    dialog p { font-size:14px; color:var(--muted); margin:0; }
+    .dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:26px; }
+    .primary-btn.danger { background:var(--wrong); }
+    @media (max-width:900px) {
+      .page { padding:24px 22px; }
+      .layout { grid-template-columns:230px minmax(0,1fr); gap:18px; }
+      .import-card { padding:20px; }
+      .welcome { padding:35px 28px; }
+      .welcome-steps { gap:13px; }
+      .quiz { padding:25px; }
+      .stat { padding:13px; }
+      .stat-value { font-size:22px; }
+    }
+    @media (max-width:700px) {
+      .page { padding:22px 16px; }
+      .masthead { align-items:flex-start; padding-bottom:22px; }
+      .brand { gap:11px; }
+      .brand-icon { width:42px; height:42px; border-radius:13px; }
+      h1 { font-size:19px; }
+      .brand p { font-size:11px; }
+      .local-badge { display:none; }
+      .layout { grid-template-columns:minmax(0,1fr); gap:20px; }
+      .sidebar { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; }
+      .import-card { padding:19px 20px; }
+      .import-card h2 { font-size:16px; }
+      .import-card .eyebrow { margin-bottom:5px; }
+      .import-btn { margin-top:14px; }
+      .import-note { margin-top:7px; }
+      .file-info { margin-top:14px; padding-top:12px; }
+      .file-counts br { display:none; }
+      .file-counts br::after { content:" "; }
+      .mode-nav { display:flex; }
+      .mode-btn { flex:1; padding:12px 10px; font-size:13px; }
+      .mode-btn + .mode-btn { margin:0 0 0 4px; }
+      .sidebar-actions { grid-column:1; padding-left:6px; }
+      .save-note { margin-top:-5px; }
+      .welcome { min-height:auto; padding:32px 25px; }
+      .welcome h2 { font-size:30px; margin-top:22px; }
+      .welcome-description { font-size:14px; }
+      .welcome-steps { gap:16px; margin-top:29px; }
+      .step p { font-size:11px; }
+      .welcome-footer { margin-top:23px; }
+      .stats { gap:7px; margin-bottom:13px; }
+      .stat { padding:12px 9px; border-radius:12px; text-align:center; }
+      .stat-value { font-size:21px; }
+      .stat-label { font-size:10px; }
+      .quiz { padding:22px 19px; }
+      .question { font-size:18px; }
+      .option { font-size:14px; padding:14px 12px; gap:10px; flex-wrap:wrap; }
+      .option-marker { margin-left:36px; width:100%; margin-top:-5px; }
+      .quiz-footer { gap:10px; align-items:flex-start; }
+      .answer-hint { padding-top:4px; max-width:54%; }
+      .primary-btn { padding:11px 16px; }
+      .feedback { padding:15px; }
+      .page-footer { padding-top:24px; }
+    }
+    @media (prefers-reduced-motion:reduce) { * { transition:none !important; scroll-behavior:auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M5 7.5c4-1 7-.5 11 2 4-2.5 7-3 11-2v18c-4-1-7-.5-11 2-4-2.5-7-3-11-2v-18Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 10v17M9 13l4 1M9 18l4 1M20 14l3-1M20 19l3-1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div><h1>證券投資・題庫練習</h1><p>每一次練習，累積一點把握。</p></div>
+      </div>
+      <div class="local-badge"><span class="dot"></span>離線可用 · 資料留在本機</div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="題庫與練習設定">
+        <section class="panel import-card">
+          <p class="eyebrow">YOUR QUESTION BANK</p>
+          <h2>從你的題庫開始</h2>
+          <p class="hint">選擇 CSV，隨時開始練習。</p>
+          <button class="import-btn" id="importButton" type="button"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V3m-4 4 4-4 4 4M4 14v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="importButtonText">匯入 CSV 題庫</span></button>
+          <input id="fileInput" type="file" accept=".csv,text/csv" hidden aria-label="選擇 CSV 題庫">
+          <p class="import-note">請選擇 twse_bank.csv</p>
+          <div class="file-info" id="fileInfo" hidden>
+            <p class="filename" id="fileName"></p>
+            <p class="file-counts"><strong id="eligibleCount"></strong> 題可練習<br> <span id="excludedCount"></span> 題未驗證，已略過</p>
+          </div>
+        </section>
+        <nav class="panel mode-nav" aria-label="練習模式">
+          <button class="mode-btn active" id="allModeButton" type="button" aria-pressed="true" disabled><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>隨機練習<span class="count-badge" id="allCount">—</span></button>
+          <button class="mode-btn" id="wrongModeButton" type="button" aria-pressed="false" disabled><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3.5h12v18l-6-4-6 4v-18Z" stroke-linejoin="round"/></svg>錯題練習<span class="count-badge" id="wrongCount">0</span></button>
+        </nav>
+        <div class="sidebar-actions"><button class="quiet-btn" id="restartButton" type="button" disabled>重新一輪</button><button class="quiet-btn" id="clearButton" type="button" disabled>清除紀錄</button></div>
+        <p class="save-note"><span class="dot" aria-hidden="true"></span><span id="saveNote">進度與錯題會自動儲存在此瀏覽器</span></p>
+      </aside>
+
+      <main class="main" id="mainContent">
+        <p class="notice" id="importMessage" role="status" aria-live="polite" hidden></p>
+        <p class="notice warning" id="storageNotice" role="status" hidden></p>
+        <div id="practiceArea">
+          <section class="panel welcome" id="welcomePanel">
+            <div class="welcome-topline"><span class="dot" aria-hidden="true"></span>隨機出題・即時回饋</div>
+            <h2>一題一題，<br><span>練到熟悉。</span></h2>
+            <p class="welcome-description">匯入題庫，開始你的練習節奏。點選答案後立即查看正解，答錯的題目也會收進錯題本，留待下一次熟練。</p>
+            <div class="welcome-steps">
+              <div class="step"><span class="step-number">01 / IMPORT</span><strong>選擇題庫</strong><p>匯入你的 CSV 檔案</p></div>
+              <div class="step"><span class="step-number">02 / PRACTICE</span><strong>隨機練習</strong><p>每輪出題不重複</p></div>
+              <div class="step"><span class="step-number">03 / REVIEW</span><strong>立即看答案</strong><p>回顧錯題，加深印象</p></div>
+            </div>
+            <p class="welcome-footer">下次回來，再次匯入相同題庫即可接續進度。</p>
+          </section>
+
+          <section class="stats" id="statsPanel" aria-label="本輪練習統計" hidden>
+            <div class="panel stat"><span class="stat-label">本輪已答</span><span class="stat-value" id="answeredStat">0</span></div>
+            <div class="panel stat correct"><span class="stat-label">答對</span><span class="stat-value" id="correctStat">0</span></div>
+            <div class="panel stat incorrect"><span class="stat-label">答錯</span><span class="stat-value" id="incorrectStat">0</span></div>
+            <div class="panel stat"><span class="stat-label">正確率</span><span class="stat-value" id="accuracyStat">—</span></div>
+          </section>
+
+          <section class="panel quiz" id="quizPanel" aria-label="目前題目" hidden>
+            <div class="quiz-top"><span class="mode-label" id="modeLabel">隨機練習</span><span id="positionLabel"></span></div>
+            <progress id="roundProgress" aria-label="本輪已作答進度" value="0" max="1"></progress>
+            <p class="question-meta" id="questionMeta"></p>
+            <h2 class="question" id="questionText" tabindex="-1"></h2>
+            <div class="options" id="options" role="group" aria-labelledby="questionText"></div>
+            <div class="feedback" id="feedback" role="status" aria-live="polite" tabindex="-1" hidden><p class="feedback-title" id="feedbackTitle"></p><p class="feedback-answer" id="feedbackAnswer"></p></div>
+            <div class="quiz-footer"><p class="answer-hint" id="answerHint">點選選項即送出答案，並立即顯示正解。</p><button class="primary-btn" id="nextButton" type="button" disabled><span id="nextButtonText">下一題</span><svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 10h12m-5-5 5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          </section>
+
+          <section class="panel complete" id="completePanel" hidden>
+            <div class="complete-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 16 5 5L24 10" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h2 class="complete-title" id="completeTitle" tabindex="-1">這一輪，完成了。</h2>
+            <p id="completeSummary"></p><p id="completeWrongNote"></p>
+            <div class="complete-actions"><button class="primary-btn" id="completeRestartButton" type="button">再練一輪</button><button class="secondary-btn" id="completeWrongButton" type="button">練習錯題</button></div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <footer class="page-footer"><span>SECURITIES PRACTICE / 證券投資題庫</span><span>僅練習已驗證答案的題目 · 不上傳任何資料</span></footer>
+  </div>
+
+  <dialog id="confirmDialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription"><form method="dialog"><h2 id="dialogTitle"></h2><p id="dialogDescription"></p><div class="dialog-actions"><button class="secondary-btn" value="cancel" autofocus>取消</button><button class="primary-btn" id="dialogConfirmButton" value="confirm">確認</button></div></form></dialog>
+
+  <script>
+    'use strict';
+    (() => {
+      const $ = id => document.getElementById(id);
+      const number = value => value.toLocaleString('zh-TW');
+      const owns = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+      const STORAGE_PREFIX = 'twse-practice:v1:';
+      let bank = null;
+      let session = null;
+      let wrongIds = new Set();
+      let importing = false;
+      let storageAvailable = true;
+      let confirmation = null;
+
+      // A stateful CSV reader is necessary: options contain quoted JSON and commas.
+      function parseCSV(text) {
+        if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+        const rows = [];
+        let row = [], field = '', quoted = false, closed = false;
+        const cell = () => { row.push(field); field = ''; closed = false; };
+        const record = () => { cell(); if (row.some(value => value.trim() !== '')) rows.push(row); row = []; };
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          if (quoted) {
+            if (char === '"') {
+              if (text[i + 1] === '"') { field += '"'; i++; }
+              else { quoted = false; closed = true; }
+            } else field += char;
+          } else if (char === ',') cell();
+          else if (char === '\r' || char === '\n') {
+            record();
+            if (char === '\r' && text[i + 1] === '\n') i++;
+          } else if (closed) {
+            if (char !== ' ' && char !== '\t') throw new Error('CSV 引號後出現非預期的文字，請檢查檔案格式。');
+          } else if (char === '"') {
+            if (field !== '') throw new Error('CSV 引號格式錯誤，請檢查檔案。');
+            quoted = true;
+          } else field += char;
+        }
+        if (quoted) throw new Error('CSV 有未結束的引號，檔案可能不完整。');
+        if (field !== '' || row.length || closed) record();
+        return rows;
+      }
+
+      function readBank(text) {
+        const rows = parseCSV(text);
+        if (rows.length < 2) throw new Error('這份 CSV 沒有題目，請選擇完整的 twse_bank.csv。');
+        const headers = rows[0].map(value => value.trim());
+        const required = ['id', 'question', 'options', 'answer', 'answer_verified'];
+        if (new Set(headers).size !== headers.length) throw new Error('CSV 有重複的欄位名稱。');
+        const missing = required.filter(name => !headers.includes(name));
+        if (missing.length) throw new Error('CSV 缺少必要欄位：' + missing.join('、') + '。');
+        const columns = Object.fromEntries(headers.map((name, index) => [name, index]));
+        const questions = new Map();
+        const seen = new Set();
+        let excluded = 0;
+        for (let i = 1; i < rows.length; i++) {
+          const values = rows[i];
+          const fail = reason => { throw new Error('第 ' + number(i) + ' 筆題目' + reason + '，請檢查 CSV。'); };
+          if (values.length !== headers.length) fail('的欄位數量不符');
+          const id = values[columns.id].trim();
+          const question = values[columns.question].trim();
+          const answer = values[columns.answer].trim();
+          const verified = values[columns.answer_verified].trim().toLowerCase();
+          if (!/^\d+$/.test(id) || seen.has(id)) fail('的題號無效或重複');
+          seen.add(id);
+          if (!question) fail('缺少題目內容');
+          if (!/^[1-4]$/.test(answer)) fail('的答案必須為 1 至 4');
+          if (verified !== 'true' && verified !== 'false') fail('的答案驗證標記無效');
+          let options;
+          try { options = JSON.parse(values[columns.options]); }
+          catch { fail('的選項不是有效的 JSON 陣列'); }
+          if (!Array.isArray(options) || options.length !== 4 || options.some(option => typeof option !== 'string' || !option.trim())) fail('必須有四個非空白文字選項');
+          if (verified === 'false') { excluded++; continue; }
+          questions.set(id, { id, question, options, answer: Number(answer) });
+        }
+        if (!questions.size) throw new Error('這份題庫沒有答案已驗證的題目，無法開始練習。');
+        return { questions, ids: [...questions.keys()], excluded };
+      }
+
+      async function fingerprint(buffer) {
+        if (!globalThis.crypto?.subtle) throw new Error('此瀏覽器無法辨識題庫內容，請以新版 Chrome 或 Edge 開啟這個 HTML 檔案。');
+        const hash = await crypto.subtle.digest('SHA-256', buffer);
+        return [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+      }
+
+      function shuffle(ids) {
+        const result = [...ids];
+        for (let i = result.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [result[i], result[j]] = [result[j], result[i]];
+        }
+        return result;
+      }
+
+      function newRound(ids) {
+        return { queue: shuffle(ids), cursor: 0, answers: {}, answered: 0, correct: 0, incorrect: 0 };
+      }
+
+      function freshSession() {
+        return { mode: 'all', rounds: { all: newRound(bank.ids), mistakes: null } };
+      }
+
+      function storageWarning() {
+        storageAvailable = false;
+        $('storageNotice').textContent = '此瀏覽器目前無法保存進度，或儲存空間已滿。你仍可繼續本次練習，但本次變更無法保存。';
+        $('storageNotice').hidden = false;
+        $('saveNote').textContent = '目前僅保留本次練習，關閉後無法接續';
+      }
+
+      function serializeRound(round) {
+        return round ? { queue: round.queue, cursor: round.cursor, answers: round.answers } : null;
+      }
+
+      function save() {
+        if (!bank || !session || !storageAvailable) return;
+        try {
+          localStorage.setItem(bank.storageKey, JSON.stringify({ version: 1, mode: session.mode, wrongIds: [...wrongIds], rounds: { all: serializeRound(session.rounds.all), mistakes: serializeRound(session.rounds.mistakes) } }));
+        } catch { storageWarning(); }
+      }
+
+      function restoreRound(saved, isAll) {
+        if (!saved || !Array.isArray(saved.queue) || !saved.queue.length || !Number.isInteger(saved.cursor) || saved.cursor < 0 || saved.cursor > saved.queue.length || !saved.answers || typeof saved.answers !== 'object' || Array.isArray(saved.answers)) throw new Error('Invalid round');
+        const queue = saved.queue;
+        if ((isAll && queue.length !== bank.ids.length) || new Set(queue).size !== queue.length || queue.some(id => typeof id !== 'string' || !bank.questions.has(id))) throw new Error('Invalid queue');
+        const round = { queue, cursor: saved.cursor, answers: {}, answered: 0, correct: 0, incorrect: 0 };
+        const answerKeys = Object.keys(saved.answers);
+        if (answerKeys.length !== saved.cursor && answerKeys.length !== Math.min(saved.cursor + 1, queue.length)) throw new Error('Invalid answer count');
+        for (let i = 0; i < queue.length; i++) {
+          const id = queue[i];
+          const answered = owns(saved.answers, id);
+          if ((i < saved.cursor && !answered) || (i > saved.cursor && answered)) throw new Error('Invalid answer order');
+          if (!answered) continue;
+          const choice = saved.answers[id];
+          if (!Number.isInteger(choice) || choice < 1 || choice > 4) throw new Error('Invalid choice');
+          round.answers[id] = choice;
+          round.answered++;
+          if (choice === bank.questions.get(id).answer) round.correct++;
+          else round.incorrect++;
+        }
+        if (round.answered !== answerKeys.length) throw new Error('Unknown saved question');
+        return round;
+      }
+
+      function restore() {
+        let raw;
+        try { raw = localStorage.getItem(bank.storageKey); }
+        catch { storageWarning(); }
+        wrongIds = new Set();
+        if (!raw) { session = freshSession(); return ''; }
+        try {
+          const saved = JSON.parse(raw);
+          if (saved.version !== 1 || !['all', 'mistakes'].includes(saved.mode) || !Array.isArray(saved.wrongIds) || saved.wrongIds.some(id => typeof id !== 'string' || !bank.questions.has(id)) || !saved.rounds) throw new Error('Invalid session');
+          const all = restoreRound(saved.rounds.all, true);
+          const mistakes = saved.rounds.mistakes === null ? null : restoreRound(saved.rounds.mistakes, false);
+          if (saved.mode === 'mistakes' && !mistakes) throw new Error('Missing review');
+          session = { mode: saved.mode, rounds: { all, mistakes } };
+          wrongIds = new Set(saved.wrongIds);
+          return '已恢復上次的練習進度與錯題本。';
+        } catch {
+          session = freshSession();
+          wrongIds = new Set();
+          return '先前的進度紀錄無法讀取，已開始新一輪。';
+        }
+      }
+
+      function message(text, error = false) {
+        $('importMessage').textContent = text;
+        $('importMessage').className = 'notice' + (error ? ' error' : '');
+        $('importMessage').setAttribute('role', error ? 'alert' : 'status');
+        $('importMessage').hidden = !text;
+      }
+
+      function setBusy(value) {
+        importing = value;
+        $('importButton').disabled = value;
+        $('importButton').setAttribute('aria-busy', String(value));
+        $('importButtonText').textContent = value ? '正在匯入…' : '匯入 CSV 題庫';
+        $('practiceArea').inert = value;
+        $('allModeButton').disabled = value || !bank;
+        $('wrongModeButton').disabled = value || !bank;
+        $('restartButton').disabled = value || !bank;
+        $('clearButton').disabled = value || !bank;
+      }
+
+      async function importFile(file) {
+        if (!file || importing) return;
+        setBusy(true);
+        message('正在讀取題庫，請稍候…');
+        try {
+          await new Promise(resolve => setTimeout(resolve, 30));
+          const bytes = await file.arrayBuffer();
+          let text;
+          try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+          catch { throw new Error('檔案不是有效的 UTF-8 CSV，請選擇原始 twse_bank.csv。'); }
+          const parsed = readBank(text);
+          const identity = await fingerprint(bytes);
+          // Commit only after the complete file has passed validation.
+          bank = { ...parsed, filename: file.name, storageKey: STORAGE_PREFIX + identity };
+          const restored = restore();
+          save();
+          message('已匯入 ' + number(bank.ids.length) + ' 題，略過 ' + number(bank.excluded) + ' 題未驗證答案。' + (restored || '開始隨機練習吧！'));
+        } catch (error) {
+          message(error instanceof Error ? error.message : '無法讀取檔案，請重新選擇 CSV。', true);
+        } finally {
+          setBusy(false);
+          render();
+        }
+      }
+
+      function activeRound() { return session.rounds[session.mode]; }
+      function optionText(option, index) { return option.replace(new RegExp('^\\s*\\(' + index + '\\)\\s*'), ''); }
+      function accuracy(round) { return round.answered ? Math.round(round.correct / round.answered * 100) + '%' : '—'; }
+
+      function render() {
+        const loaded = !!bank;
+        $('welcomePanel').hidden = loaded;
+        $('fileInfo').hidden = !loaded;
+        $('statsPanel').hidden = !loaded;
+        $('quizPanel').hidden = true;
+        $('completePanel').hidden = true;
+        $('allModeButton').disabled = !loaded || importing;
+        $('clearButton').disabled = !loaded || importing;
+        $('restartButton').disabled = !loaded || importing;
+        if (!loaded) {
+          $('wrongModeButton').disabled = true;
+          return;
+        }
+        const round = activeRound();
+        const isAll = session.mode === 'all';
+        $('fileName').textContent = bank.filename;
+        $('fileName').title = bank.filename;
+        $('eligibleCount').textContent = number(bank.ids.length);
+        $('excludedCount').textContent = number(bank.excluded);
+        $('allCount').textContent = number(bank.ids.length);
+        $('wrongCount').textContent = number(wrongIds.size);
+        $('allModeButton').classList.toggle('active', isAll);
+        $('wrongModeButton').classList.toggle('active', !isAll);
+        $('allModeButton').setAttribute('aria-pressed', String(isAll));
+        $('wrongModeButton').setAttribute('aria-pressed', String(!isAll));
+        const review = session.rounds.mistakes;
+        $('wrongModeButton').disabled = importing || (isAll && !wrongIds.size && (!review || review.cursor === review.queue.length));
+        $('restartButton').disabled = importing || (!isAll && !wrongIds.size);
+        $('answeredStat').textContent = number(round.answered);
+        $('correctStat').textContent = number(round.correct);
+        $('incorrectStat').textContent = number(round.incorrect);
+        $('accuracyStat').textContent = accuracy(round);
+
+        if (round.cursor >= round.queue.length) {
+          $('completePanel').hidden = false;
+          $('completeTitle').textContent = isAll ? '這一輪，完成了。' : '錯題複習，完成了。';
+          $('completeSummary').textContent = '共練習 ' + number(round.answered) + ' 題，答對 ' + number(round.correct) + ' 題，正確率 ' + accuracy(round) + '。';
+          $('completeWrongNote').textContent = wrongIds.size ? '錯題本還有 ' + number(wrongIds.size) + ' 題，再給自己一次練習的機會。' : '目前沒有待複習的錯題，繼續保持！';
+          $('completeRestartButton').textContent = isAll ? '再隨機練一輪' : '再複習剩餘錯題';
+          $('completeRestartButton').disabled = !isAll && !wrongIds.size;
+          $('completeWrongButton').hidden = !isAll;
+          $('completeWrongButton').disabled = !wrongIds.size;
+          return;
+        }
+
+        const id = round.queue[round.cursor];
+        const question = bank.questions.get(id);
+        const answered = owns(round.answers, id);
+        const selected = round.answers[id];
+        $('quizPanel').hidden = false;
+        $('modeLabel').textContent = isAll ? '隨機練習' : '錯題練習';
+        $('positionLabel').textContent = '第 ' + number(round.cursor + 1) + ' / ' + number(round.queue.length) + ' 題';
+        $('roundProgress').max = round.queue.length;
+        $('roundProgress').value = round.answered;
+        $('roundProgress').setAttribute('aria-valuetext', '已答 ' + number(round.answered) + ' 題，共 ' + number(round.queue.length) + ' 題');
+        $('questionMeta').textContent = '題號 #' + question.id + ' · 答案已驗證';
+        $('questionText').textContent = question.question;
+        $('options').replaceChildren();
+        question.options.forEach((option, index) => {
+          const choice = index + 1;
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'option';
+          button.dataset.choice = String(choice);
+          button.disabled = answered;
+          const badge = document.createElement('span');
+          badge.className = 'option-num';
+          badge.textContent = choice;
+          const text = document.createElement('span');
+          text.className = 'option-text';
+          text.textContent = optionText(option, choice);
+          button.append(badge, text);
+          if (answered) {
+            let label = '';
+            if (choice === question.answer) {
+              button.classList.add('is-correct');
+              label = selected === choice ? '答對了 ✓' : '正確答案 ✓';
+            } else if (choice === selected) {
+              button.classList.add('is-wrong');
+              label = '你的答案 ✕';
+            } else button.classList.add('is-dimmed');
+            if (label) {
+              const marker = document.createElement('span');
+              marker.className = 'option-marker';
+              marker.textContent = label;
+              button.append(marker);
+            }
+          }
+          button.addEventListener('click', () => answerQuestion(id, choice));
+          $('options').append(button);
+        });
+        $('feedback').hidden = !answered;
+        $('feedback').classList.toggle('wrong', answered && selected !== question.answer);
+        if (answered) {
+          $('feedbackTitle').textContent = selected === question.answer ? '答對了！繼續累積你的把握。' : (wrongIds.has(id) ? '這題答錯了，已加入錯題本。' : '這題本輪答錯，已在後續練習答對。');
+          $('feedbackAnswer').textContent = '正確答案：' + question.options[question.answer - 1];
+        } else {
+          $('feedbackTitle').textContent = '';
+          $('feedbackAnswer').textContent = '';
+        }
+        $('answerHint').textContent = answered ? '看完答案後，再前往下一題。' : '點選選項即送出答案，並立即顯示正解。';
+        $('nextButton').disabled = !answered;
+        $('nextButtonText').textContent = round.cursor === round.queue.length - 1 ? '完成本輪' : '下一題';
+      }
+
+      function answerQuestion(id, choice) {
+        if (importing || !bank) return;
+        const round = activeRound();
+        if (round.queue[round.cursor] !== id || owns(round.answers, id)) return;
+        round.answers[id] = choice;
+        round.answered++;
+        if (choice === bank.questions.get(id).answer) {
+          round.correct++;
+          wrongIds.delete(id);
+        } else {
+          round.incorrect++;
+          wrongIds.add(id);
+        }
+        save();
+        render();
+        $('feedback').focus();
+      }
+
+      function focusQuestion() {
+        const element = activeRound().cursor < activeRound().queue.length ? $('questionText') : $('completeTitle');
+        element.focus();
+      }
+
+      function changeMode(mode) {
+        if (!bank || importing) return;
+        const review = session.rounds.mistakes;
+        if (mode === 'mistakes' && (!review || (review.cursor === review.queue.length && wrongIds.size))) {
+          if (!wrongIds.size) return;
+          session.rounds.mistakes = newRound([...wrongIds]);
+        }
+        session.mode = mode;
+        save();
+        render();
+        focusQuestion();
+      }
+
+      function confirmAction(title, description, label, dangerous, action) {
+        $('dialogTitle').textContent = title;
+        $('dialogDescription').textContent = description;
+        $('dialogConfirmButton').textContent = label;
+        $('dialogConfirmButton').classList.toggle('danger', dangerous);
+        confirmation = action;
+        $('confirmDialog').returnValue = '';
+        $('confirmDialog').showModal();
+      }
+
+      function restart() {
+        if (!bank || importing) return;
+        const isAll = session.mode === 'all';
+        if (!isAll && !wrongIds.size) return;
+        const action = () => {
+          session.rounds[session.mode] = newRound(isAll ? bank.ids : [...wrongIds]);
+          save(); render(); focusQuestion();
+          message('已重新隨機排列' + (isAll ? '題庫' : '剩餘錯題') + '，開始新一輪練習。');
+        };
+        const round = activeRound();
+        if (round.answered > 0 && round.answered < round.queue.length) confirmAction('重新開始這一輪？', '目前這一輪的進度將重設，錯題本與另一種練習模式的進度會保留。', '重新一輪', false, action);
+        else action();
+      }
+
+      $('importButton').addEventListener('click', () => $('fileInput').click());
+      $('fileInput').addEventListener('change', event => {
+        const file = event.target.files[0];
+        event.target.value = '';
+        importFile(file);
+      });
+      $('allModeButton').addEventListener('click', () => changeMode('all'));
+      $('wrongModeButton').addEventListener('click', () => changeMode('mistakes'));
+      $('nextButton').addEventListener('click', () => {
+        if (!bank || importing) return;
+        const round = activeRound();
+        const id = round.queue[round.cursor];
+        if (!id || !owns(round.answers, id)) return;
+        round.cursor++;
+        save(); render(); focusQuestion();
+      });
+      $('restartButton').addEventListener('click', restart);
+      $('completeRestartButton').addEventListener('click', restart);
+      $('completeWrongButton').addEventListener('click', () => changeMode('mistakes'));
+      $('clearButton').addEventListener('click', () => {
+        if (!bank || importing) return;
+        confirmAction('清除這份題庫的全部紀錄？', '將清除一般練習、錯題練習的進度與錯題本，並重新開始。這個動作無法復原。', '清除紀錄', true, () => {
+          try { localStorage.removeItem(bank.storageKey); } catch { storageWarning(); }
+          wrongIds = new Set();
+          session = freshSession();
+          save(); render(); focusQuestion();
+          message('已清除此題庫的練習紀錄，開始新一輪。');
+        });
+      });
+      $('confirmDialog').addEventListener('close', () => {
+        const action = confirmation;
+        confirmation = null;
+        if ($('confirmDialog').returnValue === 'confirm' && action) action();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
